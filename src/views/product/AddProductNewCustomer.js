@@ -120,7 +120,7 @@ const AddProductNewCustomer = () =>{
      <span className={classes.errorText}>{errors.phoneNumber}</span>
 </Form.Group> 
     </div>
-    <ProductSelection isNewFarmer={true} getFarmer={getFarmer} />
+    <ProductSelection isNewFarmer={true} farmerId="" getFarmer={getFarmer} />
     
  </>
 

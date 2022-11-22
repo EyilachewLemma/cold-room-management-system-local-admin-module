@@ -3,15 +3,40 @@ import Form from 'react-bootstrap/Form'
 import validateProduct from './validateProduct'
 import SaveButton from '../../components/Button'
 import classes from './Products.module.css'
+import apiClient from '../../url'
 const ProductSelection = (props) =>{
- const [productInfo,setProductInfo] =useState({name:"",type:"",quality:"Fresh",quantity:"",price:""})
- const [errors,setErrors] = useState({name:"",type:"",quality:"",quantity:"",price:""})
-
+  const [products,setProducts] = useState([])
+  const [types,setTypes] =useState([])
+ const [productInfo,setProductInfo] =useState({productId:"",productTypeId:"",quality:"Fresh",quantity:"",warehousePosition:''})
+ const [errors,setErrors] = useState({productId:"",productTypeId:"",quality:"",quantity:"",warehousePosition:''})
+ 
+ const fetchProducts = async()=>{
+ const response = await apiClient.get('localadmin/products/for-filter')
+ if(response.status === 200){
+  setProducts(response.data)
+  setTypes(response.data[0]?.productTypes)
+ }
+ }
  useEffect(()=>{
-  
+  fetchProducts()
  },[])
+ console.log('products in my coldroom=',products)
+ console.log('product types of the selected product=',types)
  const onChangeHandler = (e) =>{
   const {name,value} = e.target
+  setProductInfo(preValue=>{
+    return {...preValue,[name]:value}
+  })
+  if(value){
+    setErrors(prevErrors=>{
+      return {...prevErrors,[name]:''}
+    })
+  }
+ }
+ const productSelectChangeHandler = (e) =>{
+  const {name,value} = e.target
+  const index=products.findIndex(product=>product.id*1 === e.target.value*1)
+  setTypes(products[index].productTypes)
   setProductInfo(preValue=>{
     return {...preValue,[name]:value}
   })
@@ -32,12 +57,55 @@ const ProductSelection = (props) =>{
     })
   }
  }
-    const onSaveHandler = ()=>{
-      if(props.isNewFarmer){
-      console.log(props.getFarmer())
-      }
+    const onSaveHandler = async()=>{
+      const productData = {}
       const err = validateProduct(productInfo) 
-      setErrors(err)
+        setErrors(err)
+        let error = Object.values(err)?.length
+        let farmerInfo ={}
+        let response = null
+      if(props?.isNewFarmer){
+         farmerInfo =props.getFarmer()            
+         const farmer = {
+          fName:farmerInfo.farmer.fName,
+          lName:farmerInfo.farmer.lName,
+          phoneNumber:farmerInfo.farmer.phoneNumber,          
+          address:{
+            region:farmerInfo.farmer.region,
+            zone:farmerInfo.farmer.zone,
+            woreda:farmerInfo.farmer.woreda,
+            kebele:farmerInfo.farmer.kebele
+           }
+         }
+          productData.isNew = true
+          productData.farmer = farmer
+          productData.product = productInfo  
+          console.log('new farmer =',farmerInfo)
+
+      }
+      else if(props.farmerId){
+        console.log('farmerId = ',props.farmerId)
+        productData.isNew = false
+        productData.farmerId =props.farmerId
+        productData.product = productInfo
+
+      }
+      
+      console.log('farmer error=',farmerInfo.error)
+      console.log('product error=',error)
+      if(!error && !farmerInfo.error ){
+         
+        try{
+        response = await apiClient.post('localadmin/products',productData)
+        if(response.status === 201){
+          console.log('product added =',response.data)
+        }
+        }
+        catch(err){
+          console.log(err)
+        }
+      }
+      
     }
     return<div>
        <div className="fw-bold py-2">Product Information</div>
@@ -46,29 +114,29 @@ const ProductSelection = (props) =>{
       <Form.Group className="mb-3 flex-fill me-5" controlId="product">
         <Form.Label>Product</Form.Label>
         <Form.Select 
-        name='name'
-        className={errors.name?classes.errorBorder:''}
-        onChange={selectChangeHandler}
-        value={productInfo.name || ''} >
-        <option>Tomato</option>
-        <option>Onion</option>
-        <option>Mango</option>
-        <option>Avocado</option>
+        name='productId'
+        className={errors.productId?classes.errorBorder:''}
+        onChange={productSelectChangeHandler}
+        value={productInfo.productId || ''} >
+        {
+          products?.length >0 && (
+            products.map(product=>(<option key={product.id} value={product.id}>{product.name}</option>))
+          )}
       </Form.Select>
-      <span className={classes.errorText}>{errors.name}</span>
+      <span className={classes.errorText}>{errors.productId}</span>
       </Form.Group> 
       <Form.Group className="mb-3 flex-fill me-5" controlId="type">
       <Form.Label>Type</Form.Label>
       <Form.Select
-      name='type'
-       className={errors.type?classes.errorBorder:''}
+      name='productTypeId'
+       className={errors.productTypeId?classes.errorBorder:''}
        onChange={selectChangeHandler}
-        value={productInfo.type || ''}
+        value={productInfo.productTypeId || ''}
        >
-      <option>Type 1</option>
-      <option>Type 2</option>
-      <option>Type 3</option>
-      <option>Type 4</option>
+       {
+        types?.length > 0 && (
+          types.map(type=>(<option value={type.id}>{type.title}</option>))
+        )}
     </Form.Select>
     <span className={classes.errorText}>{errors.type}</span>
     </Form.Group> 
@@ -80,19 +148,19 @@ const ProductSelection = (props) =>{
     onChange={selectChangeHandler}
     value={productInfo.quality || ''}
     >
-    <option>Fresh</option>
-    <option>nutritive </option>
-    <option>flavor </option>
+    <option value='Fresh'>Fresh</option>
+    <option value='Nutritive'>nutritive </option>
+    <option value='Flavor'>flavor </option>
   </Form.Select>
   <span className={classes.errorText}>{errors.quality}</span>
   </Form.Group> 
       
     </div>
-    <div className='d-flex justify-content-between align-items-center mt-4'>
-    <Form.Group className="mb-3 flex-fill me-5" controlId="priceinput">
+    <div className='d-flex justify-content-start align-items-center mt-4'>
+    <Form.Group className="mb-3 me-5 col-4" controlId="priceinput">
       <Form.Label>Quantity</Form.Label>
       <Form.Control
-      type='text'
+      type='number'
       name='quantity'
       onChange={onChangeHandler}
       value={productInfo.quantity || ''}
@@ -100,24 +168,18 @@ const ProductSelection = (props) =>{
      />
      <span className={classes.errorText}>{errors.quantity}</span>
     </Form.Group> 
-    <Form.Group className="mb-3 flex-fill me-5" controlId="pricecheck">
-    <Form.Label>Price per Kg</Form.Label>
+    <Form.Group className="mb-3 me-5 col-4" controlId="position">
+    <Form.Label>Product SKU</Form.Label>
     <Form.Control
     type='text'
-      name='price'
-      onChange={onChangeHandler}
-      value={productInfo.price || ''}
-      className={errors.price?classes.errorBorder:''}
-     />
-     <span className={classes.errorText}>{errors.price}</span>
-  </Form.Group> 
-   <div className='flex-fill'>
-   <Form.Check
-  type='checkbox'
-  id='currentPrice'
-  label='use current price'
+    name='warehousePosition'
+    onChange={onChangeHandler}
+    value={productInfo.warehousePosition || ''}
+    className={errors.warehousePosition?classes.errorBorder:''}
    />
-   </div>
+   <span className={classes.errorText}>{errors.warehousePosition}</span>
+  </Form.Group> 
+    
   
     
   </div>

@@ -1,14 +1,14 @@
 const validateProduct = (values) =>{
     const error = {}
 
-    if(!values.name.trim()){
-        error.name = 'product name is required'
+    if(!values.productId){
+        error.productId = 'please select product'
     }
-    if(!values.type.trim()){
-        error.type = 'product type is required'
+    if(!values.productTypeId){
+        error.productTypeId = 'please select product type'
     }
-    if(!values.quality.trim()){
-        error.quality = 'product quality is required'
+    if(!values.quality){
+        error.quality = 'please select product quality'
     }
     if(!values.quantity.trim()){
         error.quantity = 'product quantity is required'
@@ -16,11 +16,11 @@ const validateProduct = (values) =>{
     else if(values.quantity?.length >6){
         error.quantity = 'quantity must be lessthan 7 digits'
     }
-    if(!values.price.trim()){
-        error.price = 'product price is required'
+    if(!values.warehousePosition.trim()){
+       error.warehousePosition = 'product SKU is required'
     }
-    else if(values.price?.length >2){
-        error.price = 'price must be lessthan 3 digits'
+    else if(values.warehousePosition.trim()?.length > 5){
+        error.warehousePosition = 'product SKU must be lessthan 6 characters'
     }
     return error
 }
