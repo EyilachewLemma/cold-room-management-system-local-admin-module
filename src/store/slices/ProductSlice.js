@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit'
 
 const productSlice = createSlice({
     name:'product',
-    initialState:{products:[]},
+    initialState:{products:[],productHistries:[]},
     reducers:{
         setProducts:(state,action)=>{
             state.products = action.payload
@@ -10,14 +10,10 @@ const productSlice = createSlice({
         addProduct:(state,action)=>{
             state.products.push(action.payload)
         },
-        editProduct:(state,action)=>{
-            const index = state.findIndex(product=>product.id*1===action.payload.id*1)
-            console.log('edited index=',index)
-            state[index] = action.payload.product
+        setProductHistory:(state,action)=>{
+            state.productHistries = action.payload
         },
-        deleteProduct:(state,action)=>{
-            state = state.map(product=>product.id*1 !==action.payload*1)
-        }
+        
         
 
     }

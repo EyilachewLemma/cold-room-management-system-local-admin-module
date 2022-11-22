@@ -40,9 +40,11 @@ const ProductList = () => {
    // eslint-disable-next-line react-hooks/exhaustive-deps
    },[])
    const handelAddProduct = () =>{
-    
+    navigate('/products/add-product')
    }
- 
+ const viewProductHistoryHandler = () =>{
+  navigate('/products/history')
+ }
   const ViewDetailHandler = (prId) =>{
     navigate(`/products/${prId}/detail`)
   }
@@ -69,6 +71,14 @@ const ProductList = () => {
         title, product description, product stock, product SKU, product price
         and product Status. You can also add new product and delete product
       </p>
+      <div className="d-flex justify-content-end py-3">
+      <div className="me-5 onPrintDnone">
+        <Button variant="none" className={classes.viewHistoryBtn} onClick={viewProductHistoryHandler}>Product History</Button>
+        </div>
+      <div className="onPrintDnone">
+        <Button className={classes.btn} onClick={handelAddProduct}>Add Product</Button>
+        </div>
+      </div>
       <div className={classes.bottomBorder}>
        
       </div>
@@ -88,9 +98,6 @@ const ProductList = () => {
             onKeyUp={enterKeyHandler}
           />
         </InputGroup>
-        <div className="ms-auto me-5 onPrintDnone">
-        <Button className={classes.btn} onClick={handelAddProduct}>Add Product</Button>
-        </div>
         <div>
         <ReactToPrint
         trigger={()=><Button variant='none' className="exportbtn py-1 onPrintDnone"><span><i className="fas fa-file-export"></i></span> Export</Button>}
@@ -128,9 +135,9 @@ const ProductList = () => {
       <i className="fas fa-ellipsis-v"></i>
       </Dropdown.Toggle>
       <Dropdown.Menu className={classes.dropdownBg}>
-      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>ViewDetailHandler(product.id)}>Product Type</Button>
-      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>editProduct(product)}>Edit Product</Button>
-      <Button  variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>openConfirmModal(product.id)}>Delete Product</Button>
+      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>ViewDetailHandler(product.id)}>View Detail</Button>
+      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>editProduct(product)}>View Rent Fee</Button>
+      <Button  variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>openConfirmModal(product.id)}>Set Price</Button>
         </Dropdown.Menu>
     </Dropdown>
               </td>

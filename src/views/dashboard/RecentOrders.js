@@ -33,6 +33,8 @@ useEffect(()=>{
            <Link to={'/orders/list'} className={`${classes.yellowText} text-decoration-none fw-bold fs-5`}>See All</Link>
             </div>
         </div>
+        {
+        recentOrders?.length && (
       <Table responsive="md" borderless className='text-white'>
         <thead className={classes.header}>
           <tr>
@@ -44,9 +46,7 @@ useEffect(()=>{
             <th>Order Status</th>
             <th>Payment Status</th>
           </tr>
-        </thead>
-       {
-        recentOrders?.length && (
+        </thead>        
           <tbody>
           {
             recentOrders.map((order) =>(
@@ -62,9 +62,9 @@ useEffect(()=>{
             ))
           }
           </tbody>
-        )
-       }
       </Table>
+      )
+    }
 
     </div>
   );

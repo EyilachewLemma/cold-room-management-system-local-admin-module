@@ -10,7 +10,7 @@ const ButtonCard = (props) => {
     props.onSave();
   };
   return (
-    <Button onClick={createColdRoomHandler} className={classes.btn}>
+    <Button onClick={createColdRoomHandler} className={`${classes.btn} px-3`}>
       <div className="d-flex align-items-center">
         <span>{props.title}</span>
         <span className="ms-2">

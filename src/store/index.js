@@ -8,7 +8,6 @@ import WholesalerReducer from "./slices/WholesalerSlice";
 import RevenueReducer from "./slices/RevenueSlice";
 import SalesReducer from "./slices/SalesSlice";
 import UserReducer from "./slices/UserSlice";
-import ProductHistoryReducer from "./slices/ProductHistorySlice";
 import RentReducer from "./slices/RentSlice";
 import BalanceReducer from "./slices/BalanceSlice";
 import WhOrHiReducer from "./slices/WholesalerOrderSlice";
@@ -28,7 +27,6 @@ const store = configureStore({
         revenue:RevenueReducer,
         sales:SalesReducer,
         user:UserReducer,
-        productHistory:ProductHistoryReducer,
         rent:RentReducer,
         balance:BalanceReducer,
         wholesalerOrder:WhOrHiReducer,

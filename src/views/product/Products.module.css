@@ -10,8 +10,6 @@
     z-index: 0!important;
 }
 .searchIcon{
-    background: none!important;
-    border-right: none!important;
     cursor: pointer;
 }
 .header{
@@ -34,6 +32,14 @@
 .btn:hover{
     background-color: #ff4800!important;
 }
+.viewHistoryBtn{
+    border: 1px solid gray!important;
+    color: #ff4800!important;
+}
+.viewHistoryBtn:hover{
+    background-color: #FF7F00!important;
+    color: #fff!important;
+}
 .trBottomBorder{
     border-bottom: 0.1rem solid rgb(216, 202, 202)!important;
 }
@@ -55,4 +61,10 @@
 .dropdownItem:hover{
  background-color: #fff!important;
  color: #ff4800!important;
+}
+.errorBorder{
+    border-color: red!important;
+}
+.errorText{
+    color: red!important;
 }

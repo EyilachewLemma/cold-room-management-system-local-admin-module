@@ -56,10 +56,12 @@ import addYear from './addYear';
 
 const SalesOverviewChart = () =>{
   const [salesOverviews,setSalesOverview] = useState(data)
-  const years = addYear()
   const currentYear = new Date().getFullYear()*1
+  const [selectedValue,setSelectedValue] = useState(currentYear)
+  const years = addYear()
+ 
   const filterByYearHandler = async(e)=>{
-    console.log('event value=',e.target.value)
+    setSelectedValue(e.target.value)
     try{
       const response  = await apiClient.get(`admin/dashboard/bar?year=${e.target.value}`)
       if(response.status === 200){
@@ -102,10 +104,10 @@ const SalesOverviewChart = () =>{
       <div className='d-flex justify-content-between'>
       <div className='fw-bold fs-5 p-3'>Sales Overview</div>
       <div>
-      <Form.Select onChange={filterByYearHandler}>
+      <Form.Select onChange={filterByYearHandler} value={selectedValue}>
       {
         years.map(year =>{
-         return (<option value={year} key={year} selected={year ===currentYear}>Year {year}</option>)
+         return (<option value={year} key={year}>Year {year}</option>)
         })
       }
  

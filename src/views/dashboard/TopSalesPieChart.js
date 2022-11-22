@@ -29,8 +29,10 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
  const SalesPieChart = () => {
   const [salesOverview,setSalesOverview] = useState([])
   const currentYear = new Date().getFullYear()*1
+  const [selectedValue,setSelectedValue] = useState(currentYear)
   const years = addYear() 
   const filterByYearHandler = async(e)=>{
+    setSelectedValue(e.target.value)
     try{
       const response  = await apiClient.get(`admin/dashboard/pie?year=${e.target.value}`)
       if(response.status === 200){
@@ -76,10 +78,10 @@ console.log('pichart sales overview=',salesOverview)
          <div className='d-flex justify-content-between'>
             <div className='fw-bold fs-5'>Sold Products</div>
             <div>
-            <Form.Select onChange={filterByYearHandler}>
+            <Form.Select onChange={filterByYearHandler} value={selectedValue}>
             {
               years.map(year =>{
-               return (<option value={year} key={year} selected={year===currentYear}>Year {year}</option>)
+               return (<option value={year} key={year} >Year {year}</option>)
               })
             }
       </Form.Select>
