@@ -46,7 +46,7 @@ const ProductList = () => {
   navigate('/products/history')
  }
   const ViewDetailHandler = (prId) =>{
-    navigate(`/products/${prId}/detail`)
+    navigate(`/products/${prId}`)
   }
   const editProduct = (product) =>{
     

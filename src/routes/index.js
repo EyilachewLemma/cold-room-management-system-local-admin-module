@@ -10,9 +10,11 @@ import ProductStock from '../views/product/ProductStock'
 import AddProduct from '../views/product/AddProduct';
 import AddProductExistingCustomer from '../views/product/AddProductExistingCustomer';
 import AddProductNewCustomer from '../views/product/AddProductNewCustomer';
+import ProductDetail from '../views/product/ProductDetail';
 
-// import Orders from '../views/order/Orders'
-// import OrderList from '../views/order/OrderList';
+import Orders from '../views/order/Orders'
+import OrderList from '../views/order/OrderList';
+import OrderDetail from '../views/order/OrderDetail';
 
 import Farmers from '../views/farmer/Farmers'
 import BalanceHistory from '../views/farmer/BalanceHistory';
@@ -45,7 +47,12 @@ const RoutePage = () =>{
     <Route index element={<AddProductExistingCustomer />} />
     <Route path='new-farmer-product' element={<AddProductNewCustomer />} />
   </Route>
+  <Route path=':prId/' element={<ProductDetail />} />
   </Route> 
+  <Route path='orders' element={<Orders />}>
+  <Route index element={<OrderList />} />
+  <Route path=':orderId' element={<OrderDetail />}/>
+  </Route>
   <Route path='farmers' element={<Farmers />}>
   <Route index element={<FarmersList />} />
  <Route path=':faId/product-history/:tp' element={<ProductHistory />} />

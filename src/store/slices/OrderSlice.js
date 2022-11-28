@@ -2,11 +2,14 @@ import {createSlice} from '@reduxjs/toolkit'
 
 const orderSlice = createSlice({
     name:'coldroomList',
-    initialState:{orders:[]},
+    initialState:{orders:[],orderItems:[]},
     reducers:{
-        setOrders(state,action){
+        setOrders:(state,action)=>{
             state.orders = action.payload
         },
+        orderItems:(state,action)=>{
+          state.orderItems = action.payload  
+        }
 
 
     }

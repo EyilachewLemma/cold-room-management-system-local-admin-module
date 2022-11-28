@@ -1,31 +1,30 @@
 import { Fragment,useEffect,useRef } from "react";
+import { useSelector,useDispatch } from "react-redux";
+import { orderAction } from "../../store/slices/OrderSlice";
+import { isLoadingAction } from "../../store/slices/spinerSlice";
 import Table from "react-bootstrap/Table";
-import InputGroup from "react-bootstrap/InputGroup";
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button"
 import ReactToPrint from "react-to-print";
 import apiClient from "../../url/index";
-import {useNavigate } from "react-router-dom";
-import { useSelector,useDispatch } from "react-redux";
-import { isLoadingAction } from "../../store/slices/spinerSlice";
-import { productAction } from "../../store/slices/ProductSlice";
-import classes from "./Products.module.css";
+import {useNavigate,useParams } from "react-router-dom";
+import classes from "./Orders.module.css";
 
 
 
-const ProductHistory = () => {
+const OrderDetail = () => {
   const dispatch = useDispatch()
-  const products = useSelector(state =>state.product.productHistries)
+  const orders = useSelector(state =>state.order.orderItems)
   const navigate = useNavigate()
-  const componentRef = useRef()  
-  const searchBy = useRef()
+  const componentRef = useRef()
+  const {orderId} = useParams()
+  
 
-  async function  featchProductHistory(){
+  async function  featchOrder(){
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/orders`)
+   var response = await apiClient.get(`admin/orders/${orderId}`)
    if(response.status === 200){
-    dispatch(productAction.setProductHistory(response.data || []))
+    dispatch(orderAction.setOrderItems(response.data || []))
    }
   }
   catch(err){}
@@ -33,57 +32,45 @@ const ProductHistory = () => {
 }
   useEffect( ()=>{
     
-  featchProductHistory()
+  featchOrder()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
-  const enterKeyHandler = (event) =>{
-    if(event.key === 'Enter' || !event.target.value){
-      featchProductHistory()
-    }
-  }
-  const searchHandler = () =>{
-    featchProductHistory()
-  }
-  const filterByDateHandler = () =>{}
+
+  console.log('order Items from',orders)
+
   return (
     <Fragment>
     <Button onClick={()=>navigate(-1)} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 
     <div ref={componentRef}>
-      <div className="fw-bold">Product history</div>
+      <div className="fw-bold">Order Details</div>
       <div className="d-flex justify-content-between">
       <div>
         <div className="mt-3">
-          <span className="fw-bold">Cold room</span>: Bahir Dar</div>
+          <span className="fw-bold">Order Id</span>: {orders.orderCode}
+        </div>
         <div className="mt-3">
-          <span className="fw-bold">Total product stocks</span>: 1000kg
+          <span className="fw-bold">Wholesaler</span>: {orders.wholeSaler?.fName+' '+orders.wholeSaler?.lName}
+        </div>
+      </div>
+      <div className="me-5">
+        <div className="mt-3">
+          <span className="fw-bold">Total Price(ETB)</span>: {orders.totalPrice}
+        </div>
+        <div className="mt-3">
+          <span className="fw-bold">Payment Status</span>: {orders.paymentStatus}
+        </div>
+      </div>
+      <div>
+        <div className="mt-3">
+          <span className="fw-bold">Paid Amount(ETB)</span>: {orders.paidAmount}
+        </div>
+        <div className="mt-3">
+          <span className="fw-bold">Remaining Amount(ETB)</span>: {orders.totalPrice - orders.paidAmount}
         </div>
       </div>
     </div>
       <div className={`${classes.bottomBorder} mt-5`}></div>
-        <div className={`${classes.grayBg} d-flex mt-3 p-2`}>
-        <InputGroup className="mb-3 w-50 border rounded onPrintDnone">
-        <InputGroup.Text id="basic-addon1" className={classes.searchIcon}>
-          <span onClick={searchHandler}>
-            <i className="fas fa-search"></i>
-          </span>
-        </InputGroup.Text>
-        <Form.Control
-          className={classes.searchInput}
-          placeholder="search by farmer name"
-          aria-label="productName"
-          aria-describedby="basic-addon1"
-          ref={searchBy}
-          onKeyUp={enterKeyHandler}
-        />
-      </InputGroup>
-      <div className="ms-auto me-3 onPrintDnone">
-      <Form.Group controlId="search-by-date">
-      <Form.Control 
-      type="date"
-      onChange={filterByDateHandler}
-       />
-    </Form.Group>
-      </div>
+        <div className={`${classes.grayBg} d-flex justify-content-end mt-3 p-2`}>
         <div>
         <ReactToPrint
         trigger={()=><Button variant='none' className="exportbtn onPrintDnone py-1"><span><i className="fas fa-file-export"></i></span> Export</Button>}
@@ -93,7 +80,7 @@ const ProductHistory = () => {
         />
         </div>
       </div>
-      {products?.length > 0 && (
+      
       <div className="mt-4">
         <Table responsive="md">
           <thead className={classes.header}>
@@ -101,15 +88,16 @@ const ProductHistory = () => {
               <th>Product SKU</th>
               <th>Product</th>
               <th>Type</th>
-              <th>Farmer</th>
-              <th>Added Date</th>
-              <th>Quantity(Kg)</th>
+              <th>Quality</th>
+              <th>Quantity(kg)</th>
               <th>Price per Kg(ETB)</th>
+              <th>Vat %</th>
+              <th>Total Price(ETB)</th>
             </tr>
           </thead>
           <tbody>
           {
-            products.map((order) =>(
+            orders.orderItems?.map((order) =>(
               <tr className={classes.row} key={order.id}>
               <td className="p-3">{order.farmerProduct.warehousePosition}</td>
               <td className="p-3">{order.farmerProduct.product?.name}</td>
@@ -127,10 +115,8 @@ const ProductHistory = () => {
           </tbody>
         </Table>
       </div>
-      )}
-      
       </div>
     </Fragment>
   );
 };
-export default ProductHistory;
+export default OrderDetail;

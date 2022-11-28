@@ -31,40 +31,45 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   const currentYear = new Date().getFullYear()*1
   const [selectedValue,setSelectedValue] = useState(currentYear)
   const years = addYear() 
-  const filterByYearHandler = async(e)=>{
-    setSelectedValue(e.target.value)
-    try{
-      const response  = await apiClient.get(`admin/dashboard/pie?year=${e.target.value}`)
-      if(response.status === 200){
-        setSalesOverview(response.data)
+
+  const rearrangeResponse =(response) =>{
+    const topSeller = response.data.sales.map(element=>{
+      return {
+        name:element.farmerProduct.product?.name,
+        value:element.soldQuantity
       }
+    }) 
+    console.log('piechart data1=',topSeller)
+    const bestSells = []
+    topSeller.forEach((el,index)=>{
+      bestSells[index] = topSeller[index]
+    })
+     if(topSeller.length > 2){
+    const topeSale1 = topSeller[0]?.value
+    const topeSale2 = topSeller[1]?.value
+    const sum = topeSale1 + topeSale2
+    const otherValue = response.data.total-sum
+    if(otherValue > 0){
+    const other = {
+      name:'Other',
+      value:otherValue
     }
-    catch(err){}
+    bestSells.push(other)
+  }    
+    setSalesOverview(bestSells)
+  }
+  else{
+    setSalesOverview(bestSells)
+  }
   }
   useEffect(()=>{
     const fetchCurrentYearOrders = async() =>{
       try{
         const response  = await apiClient.get(`admin/dashboard/pie?year=${currentYear}`)
         if(response.status === 200){
-          
-          const topSeller= response.data.sales.map(element=>{
-            return {
-              name:element.farmerProduct.product?.name,
-              value:element.soldQuantity
-            }
-          })
-          const topeSale1 = response.data.sales[0]?.soldQuantity
-          const topeSale2 = response.data.sales[1]?.soldQuantity
-          const sum = topeSale1 + topeSale2
-          const otherValue = response.data.total-sum
-          const other = {
-            name:'Other',
-            value:otherValue
-          }
-          topSeller.push(other)
           console.log('piechart data=',response.data)
-          setSalesOverview(topSeller)
-        }
+          rearrangeResponse(response)
+      }
       }
       catch(err){}
     }
@@ -72,7 +77,16 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
-console.log('pichart sales overview=',salesOverview)
+const filterByYearHandler = async(e)=>{
+  setSelectedValue(e.target.value)
+  try{
+    const response  = await apiClient.get(`admin/dashboard/pie?year=${e.target.value}`)
+    if(response.status === 200){
+      rearrangeResponse(response)
+    }
+  }
+  catch(err){}
+}
     return (
       <div className='w-100 h-100 p-3'>
          <div className='d-flex justify-content-between'>
@@ -99,9 +113,9 @@ console.log('pichart sales overview=',salesOverview)
             fill="#8884d8"
             dataKey="value"
           >
-            {salesOverview.map((entry, index) => (
+            {salesOverview.length > 0 &&(salesOverview.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
+            )))}
           </Pie>
         </PieChart>
       </ResponsiveContainer>
@@ -114,10 +128,13 @@ console.log('pichart sales overview=',salesOverview)
             <div className={`${classes.yellowBg} border`}></div>
             <span className='text-white ms-2'>{salesOverview[1]?.name}</span>
           </div>
-          <div className='d-flex align-items-center ms-2'>
+          {salesOverview.length > 2 &&(
+            <div className='d-flex align-items-center ms-2'>
             <div className={`${classes.whiteBg} border`}></div>
             <span className='text-white ms-2'>{salesOverview[2]?.name}</span>
           </div>
+          )}
+          
         </div>
       </div>
     );

@@ -20,8 +20,6 @@ const ProductSelection = (props) =>{
  useEffect(()=>{
   fetchProducts()
  },[])
- console.log('products in my coldroom=',products)
- console.log('product types of the selected product=',types)
  const onChangeHandler = (e) =>{
   const {name,value} = e.target
   setProductInfo(preValue=>{
@@ -80,25 +78,19 @@ const ProductSelection = (props) =>{
           productData.isNew = true
           productData.farmer = farmer
           productData.product = productInfo  
-          console.log('new farmer =',farmerInfo)
 
       }
       else if(props.farmerId){
-        console.log('farmerId = ',props.farmerId)
         productData.isNew = false
         productData.farmerId =props.farmerId
         productData.product = productInfo
 
       }
-      
-      console.log('farmer error=',farmerInfo.error)
-      console.log('product error=',error)
       if(!error && !farmerInfo.error ){
          
         try{
         response = await apiClient.post('localadmin/products',productData)
         if(response.status === 201){
-          console.log('product added =',response.data)
         }
         }
         catch(err){
@@ -135,7 +127,7 @@ const ProductSelection = (props) =>{
        >
        {
         types?.length > 0 && (
-          types.map(type=>(<option value={type.id}>{type.title}</option>))
+          types.map(type=>(<option key={type.id} value={type.id}>{type.title}</option>))
         )}
     </Form.Select>
     <span className={classes.errorText}>{errors.type}</span>
