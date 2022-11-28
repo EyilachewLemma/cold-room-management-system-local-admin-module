@@ -2,16 +2,19 @@ import {Fragment,useState,useEffect} from 'react'
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import profileImage from '../assetes/eyilachew.jpg'
+import ChangePassword from './ChangePassword';
 import { useNavigate } from 'react-router-dom';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import {useDispatch,useSelector} from 'react-redux'
 import { notificationAction } from '../store/slices/NotificationSlice';
 import { isLoadingAction } from '../store/slices/spinerSlice';
+import { userAction } from '../store/slices/UserSlice';
 import apiClient from '../url/index'
 import classes from './TheHeader.module.css'
 
 const TheHeader = () =>{
   const [show,setShow] = useState(false)
+  const [showChangePassword,setShowChangePassword] = useState(false)
   const dispatch = useDispatch()
   const notifications = useSelector(state=>state.notification.notifications)
   const navigate = useNavigate()
@@ -33,15 +36,22 @@ const TheHeader = () =>{
    fetchNotification()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
-  const logoutHandler = () =>{}
+  const logoutHandler = () =>{
+    localStorage.removeItem('tokenc')
+    dispatch(userAction.setToken(null))
+    dispatch(userAction.setIsAuthenticated(false))
+    navigate('/login')
+  }
   const accountHandler = () =>{
-    navigate('/account')
+    // navigate('/account')
+    setShowChangePassword(true)
   } 
   const openNotification = () =>{
     setShow(true)
-  }
+  } 
   const handleClose = ()=>{
     setShow(false)
+    setShowChangePassword(false)
   }
   console.log('notification =',notifications)
   return <Fragment>
@@ -70,7 +80,7 @@ const TheHeader = () =>{
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <Dropdown.Item>
-            <Button className={classes.profileBtn+' text-dark'} onClick={accountHandler}>My Account</Button>            
+            <Button className={classes.profileBtn+' text-dark'} onClick={accountHandler}>Change Password</Button>            
             </Dropdown.Item>
           <Dropdown.Item>
           <Button className={classes.profileBtn+' text-dark'} onClick={logoutHandler}>Logout</Button>            
@@ -90,6 +100,7 @@ const TheHeader = () =>{
        </Offcanvas.Body>
      </Offcanvas>
        </div>
+       <ChangePassword show={showChangePassword} onClose={handleClose} />
        </Fragment>
 }
 export default TheHeader

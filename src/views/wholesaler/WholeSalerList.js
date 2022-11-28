@@ -36,7 +36,6 @@ const WholeSalerList = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
-  console.log('wholesalers from',wholesalers)
 
   const orderHistoryHandler = (whId) =>{
     navigate(`/wholesalers/${whId}/order-history`)
@@ -44,12 +43,10 @@ const WholeSalerList = () => {
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
       featchWholesalers()
-      console.log('event value',event.target.value)
     }
   }
   const searchHandler = () =>{
     featchWholesalers()
-    console.log('search value',searchBy.current.value)
   }
   return (
     <div ref={componentRef}>

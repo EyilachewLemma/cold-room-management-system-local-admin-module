@@ -123,7 +123,7 @@ const searchHandler = () =>{
           </InputGroup.Text>
           <Form.Control
             className={classes.searchInput}
-            placeholder="search orders by wholsaler name"
+            placeholder="search orders by wholesaler name"
             ref={searchBy}
             aria-label="Username"
             aria-describedby="basic-addon1"
@@ -159,13 +159,12 @@ const searchHandler = () =>{
         </div>
       </div>
       {
-        orders.data_name?.length && (
+        orders.data_name?.length > 0 && (
       <div className="mt-4">
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
               <th>Order-Id</th>
-              <th>Cold Room</th>
               <th>Wholesaler</th>
               <th>Ordered Date</th>
               <th>Total Price</th>
@@ -179,7 +178,6 @@ const searchHandler = () =>{
             orders.data_name.map((order) =>(
               <tr className={classes.row} key={order.id}>
               <td className="p-3">{order.orderCode}</td>
-              <td className="p-3">{order.coldRoom.name}</td>
               <td className="p-3">{order.wholeSaler?.fName+' '+order.wholeSaler?.lName}</td>
               <td className="p-3">{order.createdAt.slice(0,10)}</td>
               <td className="p-3">{order.totalPrice}</td>

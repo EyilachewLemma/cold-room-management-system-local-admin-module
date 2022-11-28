@@ -1,6 +1,6 @@
 import { Fragment,useEffect,useRef } from "react";
 import { useSelector,useDispatch } from "react-redux";
-import { productHistoryAction } from "../../store/slices/ProductHistorySlice";
+import { productAction } from "../../store/slices/ProductSlice";
 import { isLoadingAction } from "../../store/slices/spinerSlice";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -15,7 +15,7 @@ import classes from "./Farmers.module.css";
 const ProductHistory = () => {
 
   const dispatch = useDispatch()
-  const products = useSelector(state =>state.productHistory.products)
+  const products = useSelector(state =>state.product.productHistries)
   const navigate = useNavigate()
   const componentRef = useRef()
   const {tp,faId} = useParams()
@@ -25,7 +25,7 @@ const ProductHistory = () => {
   try{
    var response = await apiClient.get(`admin/farmers/products/${faId}`)
    if(response.status === 200){
-    dispatch(productHistoryAction.setProducts(response.data || []))
+    dispatch(productAction.setProductHistory(response.data || []))
    }
   }
   catch(err){}
@@ -98,7 +98,6 @@ console.log('pppp---',products)
               <th>Product-ID</th>
               <th>Product Name</th>
               <th>Product Type</th>
-              <th>Cold Room</th>
               <th>Added Date(GC)</th>
               <th>Sold Stock(Kg)</th>
               <th>Current Stock(Kg)</th>
@@ -111,7 +110,6 @@ console.log('pppp---',products)
               <td className="p-3">{product.warehousePosition}</td>
               <td className="p-3">{product.productType.product.name}</td>
               <td className="p-3">{product.productType.title}</td>
-              <td className="p-3">{product.coldRoom.name}</td>
               <td className="p-3">{product.createdAt.slice(0,10)}</td>
               <td className="p-3 text-center">{product.soldQuantity}</td>
               <td className="p-3 text-center">{product.currentQuantity}</td>

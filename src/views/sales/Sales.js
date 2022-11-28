@@ -15,7 +15,6 @@ const Sales = () => {
 
   const dispatch = useDispatch()
   const saleses = useSelector(state =>state.sales.saleses)
-  const coldRooms = useSelector(state=>state.coldRoomName.coldRooms)
   const componentRef = useRef()
   const searchBy = useRef()
    const  featchSaleses = async() =>{
@@ -45,17 +44,6 @@ const Sales = () => {
   const searchHandler = () =>{
     featchSaleses()
   }
-    const filterByColdRoomHandler = async (e)=>{
-      dispatch(isLoadingAction.setIsLoading(true))
-  try{
-   var response = await apiClient.get(`admin/sales?search=${searchBy.current.value}&coldRoomId=${e.target.value}&date=${''}`)
-   if(response.status === 200){
-    dispatch(salesAction.setSales(response.data || []))
-   }
-  }
-  catch(err){}
-  finally {dispatch(isLoadingAction.setIsLoading(false))}
-    }
     const filterByDateHandler = async(e) =>{
       dispatch(isLoadingAction.setIsLoading(true))
   try{
@@ -89,14 +77,6 @@ const Sales = () => {
             onKeyUp={enterKeyHandler}
           />
         </InputGroup>
-        <div className="ms-auto onPrintDnone">
-        <Form.Select aria-label="Default select example" onChange={filterByColdRoomHandler}>
-        <option value=''>All</option>
-        {coldRooms.map(coldRoom=>{
-         return(<option key={coldRoom.id} value={coldRoom.id}>{coldRoom.name}</option>)
-        })}
-      </Form.Select>
-        </div>
       <div className="ms-3 me-3 onPrintDnone">
       <Form.Group controlId="search-by-date">
       <Form.Control 
@@ -122,7 +102,6 @@ const Sales = () => {
             <tr>
               <th>Order Id</th>
               <th>Wholesaler Name</th>
-              <th>Cold Room</th>
               <th>Order Date</th>
               <th>Total Price</th>
               <th>Payment Status</th>
@@ -136,7 +115,6 @@ const Sales = () => {
               <tr className={classes.row} key={index}>
               <td className="px-2 py-3 text-center">{sales.orderCode}</td>
               <td className="px-2 py-3 text-center">{sales.wholeSaler?.fName+' '+sales.wholeSaler?.lName}</td>
-              <td className="px-2 py-3 text-center">{sales.coldRoom.name}</td>
               <td className="px-2 py-3 text-center">{sales.createdAt.slice(0,10)}</td>
               <td className="px-2 py-3 text-center">{sales.totalPrice}</td>
               <td className="px-2 py-3 text-center">{sales.paymentStatus}</td>

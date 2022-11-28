@@ -15,7 +15,6 @@ const Revenue = () => {
 
   const dispatch = useDispatch()
   const revenues = useSelector(state =>state.revenue.revenues)
-  const coldRooms = useSelector(state=>state.coldRoomName.coldRooms)
   const componentRef = useRef()
   const searchBy = useRef()
 
@@ -43,17 +42,6 @@ const Revenue = () => {
   const searchHandler = () =>{
     featchRevenues()
   }
-    const filterByColdRoomHandler = async (e)=>{
-      dispatch(isLoadingAction.setIsLoading(true))
-      try{
-       var response = await apiClient.get(`admin/revenues?search=${searchBy.current.value}&coldRoomId=${e.target.value}&date=${''}`)
-       if(response.status === 200){
-        dispatch(revenueAction.setRevenues(response.data || []))
-       }
-      }
-      catch(err){}
-      finally {dispatch(isLoadingAction.setIsLoading(false))}
-    }
     const filterByDateHandler = async(e) =>{
       dispatch(isLoadingAction.setIsLoading(true))
       try{
@@ -86,14 +74,6 @@ const Revenue = () => {
             onKeyUp={enterKeyHandler}
           />
         </InputGroup>
-        <div className="ms-auto onPrintDnone">
-        <Form.Select aria-label="Default select example" onChange={filterByColdRoomHandler}>
-        <option value=''>All</option>
-        {coldRooms.map(coldRoom=>{
-         return(<option key={coldRoom.id} value={coldRoom.id}>{coldRoom.name}</option>)
-        })}
-      </Form.Select>
-        </div>
       <div className="ms-3 me-3 onPrintDnone">
       <Form.Group controlId="search-by-date">
       <Form.Control
@@ -112,7 +92,7 @@ const Revenue = () => {
         </div>
       </div>
       {
-        revenues?.data_name?.length &&(
+        revenues?.data_name?.length > 0 &&(
           <div className="mt-4">
           <Table responsive="md">
             <thead className={classes.header}>
@@ -121,9 +101,8 @@ const Revenue = () => {
                 <th>Product Name</th>
                 <th>Product SQU</th>
                 <th>Product Type</th>
-                <th>Cold Room</th>
-                <th>Added Date(GC)</th>
-                <th>Sold Date(GC)</th>
+                <th>Added Date</th>
+                <th>Sold Date</th>
                 <th>Quantity(Kg)</th>
                 <th>Amount(ETB)</th>
               </tr>
@@ -136,7 +115,6 @@ const Revenue = () => {
                 <td className="p-3">{revenue.productName}</td>
                 <td className="p-3">{revenue.productSku}</td>
                 <td className="p-3">{revenue.productType}</td>
-                <td className="p-3">{revenue.coldRoom.name}</td>
                 <td className="p-3">{revenue.addedDate?.slice(0,10)}</td>
                 <td className="p-3">{revenue.soldDate?.slice(0,10)}</td>
                 <td className="p-3 text-center">{revenue.quantity}</td>

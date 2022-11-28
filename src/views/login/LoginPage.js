@@ -105,7 +105,7 @@ Login  <span className="ms-2">
 </Form>
 <p className={`${classes.errorText} mt-3`}>{errors.errNotify}</p>
 <div className='d-flex justify-content-end mt-4'>
-<Link to={'/forgot-password'}>Forgot Password</Link>
+<Link to={'/forgot'}>Forgot Password</Link>
 </div>
 </div>
 }

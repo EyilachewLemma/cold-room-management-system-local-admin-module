@@ -43,20 +43,13 @@ const BalanceHistory = () => {
     <Button onClick={()=>navigate(-1)} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 
     <div ref={componentRef}>
     <div className="fw-bold">Farmers Balance History</div>
-    <div className="d-flex align-items-center">
-    <div>
+    <div className="mt-2"><span className="fw-bold">Cold Room</span>: null</div>
       <div className="mt-3">
-        <span className="fw-bold">Farmer</span>: {balances.farmer.fName+' '+balances.farmer.lName}
+        <span className="fw-bold">Farmer</span>: {balances.farmer?.fName+' '+balances.farmer?.lName}
       </div>
       <div className="mt-3">
         <span className="fw-bold">Total Balance(ETB)</span>: {tb}
-      </div>
     </div>
-    <div className="ms-5 ps-5">
-    <div><span className="fw-bold">Cold Room</span>: null</div>
-    </div>  
-   
-  </div>
       <div className={`${classes.bottomBorder} mt-5`}></div>
         <div className={`${classes.grayBg} d-flex justify-content-between mt-3 p-2`}>
         <InputGroup className="w-50 border rounded onPrintDnone">

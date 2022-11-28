@@ -18,18 +18,21 @@ import OrderDetail from '../views/order/OrderDetail';
 
 import Farmers from '../views/farmer/Farmers'
 import BalanceHistory from '../views/farmer/BalanceHistory';
+import FarmerProductHistory from '../views/farmer/ProductHistory'
 import RentFee from '../views/farmer/RentFee';
 import FarmersList from '../views/farmer/FarmerList';
 
-// import WholeSalers from '../views/wholesaler/Wholesalers';
-// import WholeSalerList from '../views/wholesaler/WholeSalerList';
-// import OrderHistory from '../views/wholesaler/OrderHistory';
+import WholeSalers from '../views/wholesaler/Wholesalers';
+import WholeSalerList from '../views/wholesaler/WholeSalerList';
+import OrderHistory from '../views/wholesaler/OrderHistory';
 
-// import Revenue from '../views/revenue/Revenues'
-// import Saleses from '../views/sales/Sales'
+import Revenue from '../views/revenue/Revenues'
+import Sales from '../views/sales/Sales'
 
 import LoginPage from '../views/login/LoginPage';
+import AskToForgot from '../views/login/AskToForgot';
 import ForgotPassword from '../views/login/ForgotPassword';
+
 // import Account from '../views/account/Account';
 
 
@@ -54,31 +57,22 @@ const RoutePage = () =>{
   <Route path=':orderId' element={<OrderDetail />}/>
   </Route>
   <Route path='farmers' element={<Farmers />}>
-  <Route index element={<FarmersList />} />
- <Route path=':faId/product-history/:tp' element={<ProductHistory />} />
+  <Route index element={<FarmersList />} />  
+ <Route path=':faId/product-history/:tp' element={<FarmerProductHistory />} />
  <Route path=':faId/rent-fee/:tr' element={<RentFee />} />
  <Route path=':faId/balance/:tb' element={<BalanceHistory />} />
   </Route>
- {
-   
-  // <Route path='orders' element={<Orders />}>  
-  //   <Route index element={<OrderList />} />
-  //   </Route>    
- 
-  //    <Route path='wholesalers' element={<WholeSalers />}>
-  //    <Route index element={<WholeSalerList />} />
-  //    <Route path=':whId/order-history' element={<OrderHistory />} />
-  //     </Route>
-  //    <Route path='/revenue' element={<Revenue />}>
-  //    </Route>
-  //    <Route path='sales' element={<Saleses />}>
-  //    </Route>
-  // <Route path='/account' element={<Account />}></Route>
- }
+  <Route path='wholesalers' element={<WholeSalers />}>
+  <Route index element={<WholeSalerList />} />
+  <Route path=':whId/order-history' element={<OrderHistory />} />
+  </Route>
+  <Route path='/revenue' element={<Revenue />} />
+  <Route path='sales' element={<Sales />} />
    </Route> 
    <Route path='/login' element={<LoginPage />} />
      <Route path='/forgot-password' element={<ForgotPassword />} />     
-     <Route path="*" element={<NotFound />}/>    
+     <Route path="*" element={<NotFound />}/> 
+     <Route path='/forgot' element={<AskToForgot />} />   
   </Routes>
   
   
