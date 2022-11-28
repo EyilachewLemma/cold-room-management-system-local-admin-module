@@ -53,8 +53,9 @@ const AddProductExistingCustomer = () =>{
     <Button variant='none' className={`${classes.viewHistoryBtn} px-5 py-1`} onClick={addNewCustomerProduct}>New Farmer</Button>
     </div>
   </div>
-  <div className="mt-4">
-  {farmers?.length > 0 && (
+  {
+    farmers?.length > 0 && (
+  <div className="my-4 border border-dark rounded-3">  
   <Table responsive="md">
     <thead className={classes.header}>
       <tr>
@@ -88,8 +89,9 @@ const AddProductExistingCustomer = () =>{
      
     </tbody>
   </Table>
-  )}
+  
 </div>
+)}
     <ProductSelection farmerId={farmerId} isNewFarmer={false} />
     </>
 }

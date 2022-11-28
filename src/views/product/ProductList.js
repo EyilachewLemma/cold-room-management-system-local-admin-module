@@ -23,7 +23,7 @@ const ProductList = () => {
   const featchProducts = async ()=>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/products?search=${searchBy.current.value}`)
+   var response = await apiClient.get(`localadmin/products?search=${searchBy.current.value}`)
    if(response.status === 200){
     console.log('products=..',response.data)
     dispatch(productAction.setProducts(response.data))

@@ -4,10 +4,14 @@ import Button from 'react-bootstrap/Button'
 import ProductSelection from './ProductSelection'
 import validateFarmer from './validateFarmer'
 import classes from './Products.module.css'
+import { useNavigate } from 'react-router-dom'
 const AddProductNewCustomer = () =>{
     const [farmer,setFarmer] = useState({fName:'',lName:'',region:'',zone:'',woreda:'',kebele:'',phoneNumber:''})
     const [errors,setErrors] = useState({})
-    const addExistingCustomerProduct = () =>{}
+    const navigate = useNavigate()
+    const addExistingCustomerProduct = () =>{
+        navigate('/products/add-product')
+    }
     const changeHandler = (e)=>{
         const {name,value}= e.target
         setFarmer(prevValues=>{

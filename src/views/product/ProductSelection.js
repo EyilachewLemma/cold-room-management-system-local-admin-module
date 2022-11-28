@@ -1,22 +1,31 @@
-import {useState,useEffect} from 'react'
+import {Fragment,useState,useEffect} from 'react'
 import Form from 'react-bootstrap/Form'
 import validateProduct from './validateProduct'
 import SaveButton from '../../components/Button'
-import classes from './Products.module.css'
+import NotificationModal from '../../components/NotificationModal'
+import {buttonAction} from '../../store/slices/ButtonSpinerSlice'
+import { useDispatch } from 'react-redux'
 import apiClient from '../../url'
+import classes from './Products.module.css'
 const ProductSelection = (props) =>{
   const [products,setProducts] = useState([])
   const [types,setTypes] =useState([])
  const [productInfo,setProductInfo] =useState({productId:"",productTypeId:"",quality:"Fresh",quantity:"",warehousePosition:''})
- const [errors,setErrors] = useState({productId:"",productTypeId:"",quality:"",quantity:"",warehousePosition:''})
- 
+ const [errors,setErrors] = useState({productId:"",productTypeId:"",quality:"",quantity:"",warehousePosition:'',farmer:''})
+ const[modalData,setModalData] = useState({show:false,status:null,title:'',message:''})
+ const dispatch = useDispatch()
+ const {farmerId} =  props
  const fetchProducts = async()=>{
  const response = await apiClient.get('localadmin/products/for-filter')
  if(response.status === 200){
   setProducts(response.data)
   setTypes(response.data[0]?.productTypes)
+  setProductInfo(prevValues=>{
+    return {...prevValues,productId:response.data[0]?.id,productTypeId:response.data[0]?.productTypes[0]?.id}
+  })
  }
  }
+
  useEffect(()=>{
   fetchProducts()
  },[])
@@ -36,7 +45,7 @@ const ProductSelection = (props) =>{
   const index=products.findIndex(product=>product.id*1 === e.target.value*1)
   setTypes(products[index].productTypes)
   setProductInfo(preValue=>{
-    return {...preValue,[name]:value}
+    return {...preValue,[name]:value,productTypeId:products[index].productTypes[0]?.id}
   })
   if(value){
     setErrors(prevErrors=>{
@@ -55,10 +64,17 @@ const ProductSelection = (props) =>{
     })
   }
  }
-    const onSaveHandler = async()=>{
+    const saveHandler = async()=>{
       const productData = {}
-      const err = validateProduct(productInfo) 
+      let err = validateProduct(productInfo) 
         setErrors(err)
+        if(!props.isNewFarmer && !props.farmerId){
+          setErrors(prevErr=>{
+            return {...prevErr,farmer:'please search and select farmer'}
+            
+          })
+          err.farmer = "please search and select farmer"
+        }
         let error = Object.values(err)?.length
         let farmerInfo ={}
         let response = null
@@ -80,31 +96,38 @@ const ProductSelection = (props) =>{
           productData.product = productInfo  
 
       }
-      else if(props.farmerId){
+      else if(!props.isNewFarmer){
         productData.isNew = false
         productData.farmerId =props.farmerId
         productData.product = productInfo
 
       }
-      if(!error && !farmerInfo.error ){
-         
+      if(!error && !farmerInfo.error ){         
         try{
+          dispatch(buttonAction.setBtnSpiner(true));
         response = await apiClient.post('localadmin/products',productData)
-        if(response.status === 201){
+        if(response.status === 200){
+          setModalData({show:true,status:1,title:'Successful',message:'You added a product successfully'})
         }
         }
         catch(err){
-          console.log(err)
+          setModalData({show:true,status:0,title:'Faild',message:'faild to add product'})
+        }
+        finally{
+          dispatch(buttonAction.setBtnSpiner(false));
         }
       }
       
     }
-    return<div>
+    const handleModalClose =() =>{
+      setModalData({})
+    }
+    return<Fragment>
        <div className="fw-bold py-2">Product Information</div>
        <div className="border border-2 rounded-3 shadow-sm p-4">
       <div className='d-flex'>
       <Form.Group className="mb-3 flex-fill me-5" controlId="product">
-        <Form.Label>Product</Form.Label>
+        <Form.Label>Select Product</Form.Label>
         <Form.Select 
         name='productId'
         className={errors.productId?classes.errorBorder:''}
@@ -118,7 +141,7 @@ const ProductSelection = (props) =>{
       <span className={classes.errorText}>{errors.productId}</span>
       </Form.Group> 
       <Form.Group className="mb-3 flex-fill me-5" controlId="type">
-      <Form.Label>Type</Form.Label>
+      <Form.Label>Select Product Type</Form.Label>
       <Form.Select
       name='productTypeId'
        className={errors.productTypeId?classes.errorBorder:''}
@@ -133,7 +156,7 @@ const ProductSelection = (props) =>{
     <span className={classes.errorText}>{errors.type}</span>
     </Form.Group> 
     <Form.Group className="mb-3 flex-fill" controlId="product">
-    <Form.Label>Quality</Form.Label>
+    <Form.Label>Select Product Quality</Form.Label>
     <Form.Select 
     name='quality'
     className={errors.quality?classes.errorBorder:''}
@@ -150,7 +173,7 @@ const ProductSelection = (props) =>{
     </div>
     <div className='d-flex justify-content-start align-items-center mt-4'>
     <Form.Group className="mb-3 me-5 col-4" controlId="priceinput">
-      <Form.Label>Quantity</Form.Label>
+      <Form.Label>Quantity In Kg</Form.Label>
       <Form.Control
       type='number'
       name='quantity'
@@ -170,15 +193,16 @@ const ProductSelection = (props) =>{
     className={errors.warehousePosition?classes.errorBorder:''}
    />
    <span className={classes.errorText}>{errors.warehousePosition}</span>
-  </Form.Group> 
-    
-  
-    
+  </Form.Group>      
   </div>
+  {!farmerId &&(
+  <div className={`${classes.errorText} my-3 text-center`}>{errors.farmer}</div>
+  )}
        </div>
        <div className='d-flex justify-content-end ms-auto mt-4'>
-   <SaveButton title="Save" onSave={onSaveHandler} />
+   <SaveButton title="Save" onSave={saveHandler} />
     </div>
-    </div>
+    <NotificationModal modal={modalData} onClose={handleModalClose} />
+    </Fragment>
 }
 export default ProductSelection
