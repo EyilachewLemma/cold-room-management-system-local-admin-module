@@ -15,6 +15,7 @@ import classes from "./Products.module.css";
 const ProductList = () => {
   const componentRef = useRef()
   const searchBy = useRef()
+  const user = useSelector(state=>state.user.data)
  const products = useSelector(state=>state.product.products)
   const dispatch = useDispatch()
  const navigate = useNavigate()
@@ -23,7 +24,7 @@ const ProductList = () => {
   const featchProducts = async ()=>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`localadmin/products?search=${searchBy.current.value}`)
+   var response = await apiClient.get(`localadmin/products?search=${searchBy.current.value}&coldRoomId=${user.coldRoom.id}`)
    if(response.status === 200){
     console.log('products=..',response.data)
     dispatch(productAction.setProducts(response.data))
@@ -51,8 +52,6 @@ const ProductList = () => {
   const editProduct = (product) =>{
     
   }
-  const openConfirmModal = () =>{
-  }
 
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
@@ -66,10 +65,8 @@ const ProductList = () => {
     <div ref={componentRef}>
       <h5 className="text-bold">Product List</h5>
       <p className={`${classes.titleP} fw-bold small`}>
-        In the products section you can review and manage all products with
-        their detail.You can view and edit many information such as product
-        title, product description, product stock, product SKU, product price
-        and product Status. You can also add new product and delete product
+        In the products section you can view  all product information with
+        their detail.You can also edit product type price
       </p>
       <div className="d-flex justify-content-end py-3">
       <div className="me-5 onPrintDnone">
@@ -122,11 +119,11 @@ const ProductList = () => {
           <tbody>
           {
             products.map((product,index) =>(
-              <tr key={product.id}>
+              <tr key={product.productId}>
               <td className="p-4">{index +1}</td>
-              <td className="p-4">{product.name}</td>
+              <td className="p-4">{product.product.name}</td>
               <td className="p-2">
-                <img src={product.imageUrl} alt="product_Image" className={`${classes.img} img-fluid`} />
+                <img src={product.product.imageUrl} alt="product_Image" className={`${classes.img} img-fluid`} />
               </td>
               <td className="p-4">{product.totalProduct}</td>
               <td className={`onPrintDnone`}>
@@ -135,9 +132,8 @@ const ProductList = () => {
       <i className="fas fa-ellipsis-v"></i>
       </Dropdown.Toggle>
       <Dropdown.Menu className={classes.dropdownBg}>
-      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>ViewDetailHandler(product.id)}>View Detail</Button>
+      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>ViewDetailHandler(product.productId)}>View Detail</Button>
       <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>editProduct(product)}>View Rent Fee</Button>
-      <Button  variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>openConfirmModal(product.id)}>Set Price</Button>
         </Dropdown.Menu>
     </Dropdown>
               </td>

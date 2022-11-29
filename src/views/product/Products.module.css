@@ -68,3 +68,10 @@
 .errorText{
     color: red!important;
 }
+.editBtn{
+    background: none;
+    border: none;
+}
+.editBtn:hover{
+    color: #ff4800;
+}

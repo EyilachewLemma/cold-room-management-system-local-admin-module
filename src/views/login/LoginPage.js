@@ -6,7 +6,9 @@ import { useSelector,useDispatch } from "react-redux";
 import { Link } from 'react-router-dom';
 import {buttonAction} from '../../store/slices/ButtonSpinerSlice'
 import { userAction } from '../../store/slices/UserSlice';
-// import apiClient from '../../url/index';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import apiClient from '../../url/index';
 import classes from './Login.module.css'
 
 
@@ -15,6 +17,7 @@ const LoginPage = () =>{
     const [cridentials, setCridentials] = useState({email:'',password:''})
     const [errors,setErrors] = useState({email:'',password:'',errNotify:''})
     const dispatch = useDispatch()
+    const navigate = useNavigate()
         const changeHandler = (e) =>{
            const {name,value} = e.target
            setCridentials(prevValues=>{
@@ -43,28 +46,48 @@ const LoginPage = () =>{
          }
          return errorValues
         } 
+        const fetchUserData = async(data) =>{
+          try{
+           const response = await axios.get('http://192.168.0.9:3000/localadmin/auth/my-account',{
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization:`Bearer ${data.token}`,    
+      
+          }
+           })
+           if(response.status === 200){
+            dispatch(userAction.setUser(response.data))
+            navigate('/')
+         }
+          }
+          catch(err){
+            console.log('error')
+          }
+         }
         const saveUserData = (data) =>{
-            // apiClient.defaults.headers.common["Authorization"] = `Bearer ${data.data.access_token}`;
-            //   localStorage.setItem("tokenc", data.data.access_token);
-            //   dispatch(userAction.setToken(data.data.access_token))
-              dispatch(userAction.setIsAuthenticated(data))
+            apiClient.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+              localStorage.setItem("token", data.token);
+              dispatch(userAction.setToken(data.token))
+              dispatch(userAction.setIsAuthenticated(true))
         }
         const loginHandler = async() =>{
             setErrors(validate(cridentials))
             if(!errors.email && !errors.password){
                 dispatch(buttonAction.setBtnSpiner(true))
                 try{
-                    // var response = await apiClient.post('admin/login',cridentials)
-                    // if(response.status === 200){
-                        saveUserData(true)
-                        console.log('log in success')
-                    // }
+                    var response = await apiClient.post('admin/auth/login',cridentials)
+                    if(response.status === 200 || 201){
+                        saveUserData(response.data)
+                        fetchUserData(response.data)
+                    }
                 }
                 catch(err){
-                    console.log('login fail')
-                    setErrors(prevErrors=>{
-                        return {...prevErrors,errNotify:'login faild'}
-                    })
+                  console.log('err',err)
+                    // setErrors(prevErrors=>{
+                    //     return {...prevErrors,errNotify:err.response.data}
+                    // })
                 }
                 finally{
                     dispatch(buttonAction.setBtnSpiner(false))

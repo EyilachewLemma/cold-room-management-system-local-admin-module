@@ -1,13 +1,16 @@
 import { useState,useRef,useEffect } from "react";
 import Table from "react-bootstrap/Table";
-import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import ReactToPrint from "react-to-print";
 import {useDispatch } from "react-redux";
 import { isLoadingAction } from "../../store/slices/spinerSlice";
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
+import SaveButton from '../../components/Button'
+import CancelButton from "../../components/CancelButton";
+
 // import { buttonAction } from "../../store/slices/ButtonSpinerSlice";
 import apiClient from "../../url/index";
-import EditProductTypeInofo from './EditProductTypeInfo'
 import { useParams,useNavigate } from "react-router-dom";
 import classes from "./Products.module.css";
 
@@ -18,17 +21,15 @@ const ProductDetail = () => {
   const [producttoedited,setProduct] = useState({})
   const componentRef = useRef()
   const navigate = useNavigate()
-//  const products = useSelector(state=>state.productDetail.productTypes)
   const dispatch = useDispatch()
   const {prId} = useParams()
 
   const featchProductDetails = async ()=>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/products/${prId}`)
+   var response = await apiClient.get(`localadmin/products/get-price/${prId}`)
    if(response.status === 200){
-    console.log('product types=..',response.data)
-    dispatch(setProductTypes(response.data))
+    setProductTypes(response.data)
    
    }
   }
@@ -41,14 +42,14 @@ const ProductDetail = () => {
     featchProductDetails()
    // eslint-disable-next-line react-hooks/exhaustive-deps
    },[])
-  const editProductTypeHandler = (product) =>{
+  const editProductTypePriceHandler = (product) =>{
     setProduct(product)
     setShow(true)
   }
-  const closeModalHandler = () =>{
+  const handleClose = () =>{
     setShow(false)
   }
- 
+ console.log('producttoedited',producttoedited)
   return (
     <div ref={componentRef}>
     <Button onClick={()=>navigate(-1)} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 
@@ -77,40 +78,55 @@ const ProductDetail = () => {
             <tr>
               <th>NO</th>
               <th>Product Type</th>
-              <th>Product Type Description</th>
               <th>Product Type Image</th>
+              <th>Price Pre Kg</th>
               <th className="onPrintDnone"></th>
             </tr>
           </thead>
           <tbody>
           {
             productTypes.map((product,index) =>(
-              <tr key={index}>
+              <tr key={product.id}>
               <td className="p-4">{index+1}</td>
               <td className="p-4">{product.title}</td>
-              <td className="p-4">{product.description}</td>
               <td className="p-4">
               <img src={product.imageUrl} alt="product_type_image" className={classes.img} />
               </td>
+              <td className="p-4">{product.pricePerKg?product.pricePerKg:0}</td>
               <td className={`onPrintDnone`}>
-              <Dropdown>
-      <Dropdown.Toggle variant="none" id="dropdown-basic">
-      <i className="fas fa-ellipsis-v"></i>
-      </Dropdown.Toggle>
-      <Dropdown.Menu className={classes.dropdownBg}>
-      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>editProductTypeHandler(product)}>Edit Product Type</Button>
-        </Dropdown.Menu>
-    </Dropdown>
+             <Button variant="none" className={`${classes.dropdownItem} w-100 rounded-0 text-start ps-3`} onClick={()=>editProductTypePriceHandler(product)}>Edit Price</Button>       
               </td>
             </tr>
             ))
-          }
-            
-           
+          }         
           </tbody>
         </Table>
       </div>
-      <EditProductTypeInofo show={show} onClose={closeModalHandler} product={producttoedited} />
+      <Modal
+      show={show}
+      onHide={handleClose}
+      backdrop="static"
+      keyboard={false}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Edit Product type price</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+     <div className="p-3">
+     <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Label>Password</Form.Label>
+        <Form.Control type="password" placeholder="Password" />
+      </Form.Group>
+      <div className="d-flex justify-content-end my-3">
+      <CancelButton title='Cancel' onClose={handleClose}/>
+      <div className="ms-4"><SaveButton title='Save' /></div>
+      
+     
+      </div> 
+     </div>
+      </Modal.Body>
+    
+    </Modal>
     </div>
   );
 };

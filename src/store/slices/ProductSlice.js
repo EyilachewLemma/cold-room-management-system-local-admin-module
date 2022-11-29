@@ -13,7 +13,10 @@ const productSlice = createSlice({
         setProductHistory:(state,action)=>{
             state.productHistries = action.payload
         },
-        
+        deleteHistory:(state,action)=>{
+            const index  = state.productHistries.findIndex(product=>product.id === action.payload)
+            state.productHistries.splice(index,1)
+        }
         
 
     }

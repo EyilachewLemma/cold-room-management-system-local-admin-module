@@ -4,10 +4,11 @@ import validateProduct from './validateProduct'
 import SaveButton from '../../components/Button'
 import NotificationModal from '../../components/NotificationModal'
 import {buttonAction} from '../../store/slices/ButtonSpinerSlice'
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 import apiClient from '../../url'
 import classes from './Products.module.css'
 const ProductSelection = (props) =>{
+  const user = useSelector(state=>state.user.data)
   const [products,setProducts] = useState([])
   const [types,setTypes] =useState([])
  const [productInfo,setProductInfo] =useState({productId:"",productTypeId:"",quality:"Fresh",quantity:"",warehousePosition:''})
@@ -94,12 +95,14 @@ const ProductSelection = (props) =>{
           productData.isNew = true
           productData.farmer = farmer
           productData.product = productInfo  
+          productData.coldRoomId = user.coldRoom.id
 
       }
       else if(!props.isNewFarmer){
         productData.isNew = false
         productData.farmerId =props.farmerId
         productData.product = productInfo
+        productData.coldRoomId = 1
 
       }
       if(!error && !farmerInfo.error ){         

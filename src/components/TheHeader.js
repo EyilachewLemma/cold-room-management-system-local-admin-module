@@ -1,7 +1,7 @@
 import {Fragment,useState,useEffect} from 'react'
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
-import profileImage from '../assetes/eyilachew.jpg'
+// import profileImage from '../assetes/eyilachew.jpg'
 import ChangePassword from './ChangePassword';
 import { useNavigate } from 'react-router-dom';
 import Offcanvas from 'react-bootstrap/Offcanvas';
@@ -17,6 +17,7 @@ const TheHeader = () =>{
   const [showChangePassword,setShowChangePassword] = useState(false)
   const dispatch = useDispatch()
   const notifications = useSelector(state=>state.notification.notifications)
+  const user = useSelector(state=>state.user.data)
   const navigate = useNavigate()
  
   useEffect(()=>{
@@ -71,11 +72,14 @@ const TheHeader = () =>{
       <Dropdown>
         <Dropdown.Toggle className={classes.dropDown+' d-flex align-items-center'} id="profile-dropdown">
         <div className='d-flex overflow-hidden ms-2 align-items-center'>
-      <img src={profileImage} alt={'profile_photo'} className={classes.profileImg+' img-fluid rounded-circle'} />
-         <div className='text-white me-2'>
-           <div className='fw-bold ms-2 mt-2'>Mesenbet Dinku  </div>
-           <div className='small text-start ms-3'>admin</div>
-         </div>
+        <div className='fs-2'><i className="far fa-user"></i></div>
+        { 
+          //  <img src={profileImage} alt={'profile_photo'} className={classes.profileImg+' img-fluid rounded-circle'} />
+          }
+             <div className='text-white me-2'>
+               <div className='fw-bold ms-2 mt-2'>{user.fName+' '+user.lName}</div>
+               <div className='small text-start ms-3'>{user.role}</div>
+             </div>
          </div>
         </Dropdown.Toggle>
         <Dropdown.Menu>

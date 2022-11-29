@@ -40,7 +40,7 @@ import NotFound from '../views/NotFound';
 const RoutePage = () =>{
   return <Routes>
   <Route path='/' element={<AppContainer />}>
-  <Route path='dash-board' element={<DashBoard />} /> 
+  <Route path='/' element={<DashBoard />} /> 
   <Route path='products' element={<Products />}>
   <Route index element={<ProductList />} />
   <Route path='history' element={<ProductHistory />} />
