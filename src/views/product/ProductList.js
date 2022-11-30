@@ -122,8 +122,10 @@ const ProductList = () => {
               <tr key={product.productId}>
               <td className="p-4">{index +1}</td>
               <td className="p-4">{product.product.name}</td>
-              <td className="p-2">
+              <td className="pb-0 mb-0">
+              <div className={`${classes.imgSize} mt-2`}>
                 <img src={product.product.imageUrl} alt="product_Image" className={`${classes.img} img-fluid`} />
+                </div>
               </td>
               <td className="p-4">{product.totalProduct}</td>
               <td className={`onPrintDnone`}>

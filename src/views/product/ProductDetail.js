@@ -2,14 +2,14 @@ import { useState,useRef,useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import Button from 'react-bootstrap/Button';
 import ReactToPrint from "react-to-print";
-import {useDispatch } from "react-redux";
+import {useDispatch,useSelector } from "react-redux";
 import { isLoadingAction } from "../../store/slices/spinerSlice";
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import SaveButton from '../../components/Button'
 import CancelButton from "../../components/CancelButton";
 
-// import { buttonAction } from "../../store/slices/ButtonSpinerSlice";
+import { buttonAction } from "../../store/slices/ButtonSpinerSlice";
 import apiClient from "../../url/index";
 import { useParams,useNavigate } from "react-router-dom";
 import classes from "./Products.module.css";
@@ -19,6 +19,9 @@ const ProductDetail = () => {
     const [productTypes,setProductTypes] = useState([])
   const [show,setShow] = useState(false)
   const [producttoedited,setProduct] = useState({})
+  const [price,setPrice] = useState(null)
+  const [error,setError] = useState('')
+  const user = useSelector(state=>state.user.data)
   const componentRef = useRef()
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -45,7 +48,47 @@ const ProductDetail = () => {
   const editProductTypePriceHandler = (product) =>{
     setProduct(product)
     setShow(true)
+    setPrice(product.price?? 0)
   }
+  const priceChangeHandler = (e) =>{
+    setPrice(e.target.value)
+  }
+  const saveProductTypePrice = async() =>{
+    let errorValu = ''
+    if(!price){
+       errorValu = 'please enter current price'
+      }
+      else if(price.length > 3){
+        errorValu = 'price vale must be lessthan 4 digits'
+      }
+    setError(errorValu)
+    const priceData = {
+      coldRoomId:user.coldRoom.id,
+      productId:producttoedited.productId,
+      productTypeId:producttoedited.id,
+      price:price,
+    }
+    if(!errorValu){
+        try{
+          dispatch(buttonAction.setBtnSpiner(true))
+          const response = await apiClient.post(`localadmin/products/set-price`,priceData)
+          if(response.status === 200 || 201){
+            const index = productTypes.findIndex(type=>type.id===producttoedited.id)
+            const productType = [...productTypes]
+            productType[index].price = price
+            setProductTypes(productType)
+            setShow(false)
+            
+
+            
+          }
+        }
+        catch(err){}
+        finally{
+          dispatch(buttonAction.setBtnSpiner(false))
+        }
+  }
+}
   const handleClose = () =>{
     setShow(false)
   }
@@ -89,12 +132,16 @@ const ProductDetail = () => {
               <tr key={product.id}>
               <td className="p-4">{index+1}</td>
               <td className="p-4">{product.title}</td>
-              <td className="p-4">
-              <img src={product.imageUrl} alt="product_type_image" className={classes.img} />
+              <td className="pb-0 mb-0">
+              <div className={`${classes.imgSize} mt-2`}>
+                <img src={product.imageUrl} alt="product_Image" className={`${classes.img} img-fluid`} />
+                </div>
               </td>
-              <td className="p-4">{product.pricePerKg?product.pricePerKg:0}</td>
+              <td className="p-4">{product.price?product.price:0}</td>
               <td className={`onPrintDnone`}>
-             <Button variant="none" className={`${classes.dropdownItem} w-100 rounded-0 text-start ps-3`} onClick={()=>editProductTypePriceHandler(product)}>Edit Price</Button>       
+            <div className="d-flex justify-content-end align-items-center">
+             <Button variant="none" className={`${classes.dropdownItem} border rounded mt mt-4`} onClick={()=>editProductTypePriceHandler(product)}>Edit Price</Button>
+               </div>     
               </td>
             </tr>
             ))
@@ -114,12 +161,20 @@ const ProductDetail = () => {
       <Modal.Body>
      <div className="p-3">
      <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" />
+        <Form.Label>Enter product type price here (price/Kg)</Form.Label>
+        <Form.Control
+         type="text"
+         onChange={priceChangeHandler}
+         value={price}
+         className={error?classes.errorBorder:''}
+          />
+          <span className={classes.errorText}>{error}</span>
       </Form.Group>
       <div className="d-flex justify-content-end my-3">
       <CancelButton title='Cancel' onClose={handleClose}/>
-      <div className="ms-4"><SaveButton title='Save' /></div>
+      <div className="ms-4">
+      <SaveButton title='Save' onSave={saveProductTypePrice} />
+      </div>
       
      
       </div> 

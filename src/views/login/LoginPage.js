@@ -48,7 +48,7 @@ const LoginPage = () =>{
         } 
         const fetchUserData = async(data) =>{
           try{
-           const response = await axios.get('http://192.168.0.9:3000/localadmin/auth/my-account',{
+           const response = await axios.get('http://192.168.1.54:3000/localadmin/auth/my-account',{
             headers: {
               'Access-Control-Allow-Origin': '*',
               Accept: 'application/json',
