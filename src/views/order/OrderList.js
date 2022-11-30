@@ -23,6 +23,7 @@ const OrderList = () => {
   const[order,setOrder] = useState({})
   const dispatch = useDispatch()
   const orders = useSelector(state =>state.order.orders)
+  const user = useSelector(state=>state.user.data)
   const componentRef = useRef()
   const searchBy = useRef()
   const navigate = useNavigate()
@@ -30,7 +31,7 @@ const OrderList = () => {
   const  featchOrders = async () =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/orders?search=${searchBy.current.value}&status=${''}&date=${''}&page=${currentPage}`)
+   var response = await apiClient.get(`localadmin/orders?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value}&status=${''}&date=${''}&page=${currentPage}`)
    if(response.status === 200){
     dispatch(orderAction.setOrders(response.data || []))
    }
@@ -63,18 +64,15 @@ const handlPaymentStatusModalClose = () =>{
 const enterKeyHandler = (event) =>{
   if(event.key === 'Enter' || !event.target.value){
     featchOrders()
-    console.log('event value',event.target.value)
   }
 }
 const searchHandler = () =>{
   featchOrders()
-  console.log('search value',searchBy.current.value)
 }
   const filterOrderHandler = async(e)=>{
-    console.log('option=', e.target.value)
     dispatch(isLoadingAction.setIsLoading(false))
     try{
-     var response = await apiClient.get(`admin/orders?search=${searchBy.current.value}&status=${e.target.value}&date=${''}`)
+     var response = await apiClient.get(`localadmin/orders?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value}&status=${e.target.value}&date=${''}`)
      if(response.status === 200){
       dispatch(orderAction.setOrders(response.data || []))
      }
@@ -87,7 +85,7 @@ const searchHandler = () =>{
     console.log('date=',e.target.value)
     dispatch(isLoadingAction.setIsLoading(false))
   try{
-   var response = await apiClient.get(`admin/orders?search=${searchBy.current.value}&status=${''}&date=${e.target.value}`)
+   var response = await apiClient.get(`localadmin/orders?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value}&status=${''}&date=${e.target.value}`)
    if(response.status === 200){
     dispatch(orderAction.setOrders(response.data || []))
    }

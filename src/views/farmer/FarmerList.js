@@ -1,4 +1,4 @@
-import { useEffect,useRef } from "react";
+import {Fragment, useEffect,useRef } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import { farmerAction } from "../../store/slices/FarmerSlice";
 import { isLoadingAction } from "../../store/slices/spinerSlice";
@@ -8,6 +8,7 @@ import Table from "react-bootstrap/Table";
 import ReactToPrint from "react-to-print";
 import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
+import EditFarmer from "./EditFarmer";
 import apiClient from "../../url/index";
 import { useNavigate } from "react-router-dom";
 import classes from "./Farmers.module.css";
@@ -24,9 +25,8 @@ const FarmersList = () => {
   const featchFarmers = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/farmers?search=${searchBy.current.value}`)
+   var response = await apiClient.get(`localadmin/farmers?search=${searchBy.current.value}`)
    if(response.status === 200){
-    console.log('farmers=',response.data)
     dispatch(farmerAction.setFarmers(response.data || []))
    }
   }
@@ -51,14 +51,12 @@ const handlProductHistory = (tp,id) =>{
 const enterKeyHandler = (event) =>{
   if(event.key === 'Enter' || !event.target.value){
     featchFarmers()
-    console.log('event value',event.target.value)
   }
 }
 const searchHandler = () =>{
   featchFarmers()
-  console.log('search value',searchBy.current.value)
 }
-  return (
+  return (<Fragment>
     <div ref={componentRef}>
       <h5 className="text-bold">Farmers List</h5>
       <p className={`${classes.titleP} fw-bold small`}>
@@ -151,6 +149,8 @@ const searchHandler = () =>{
         <div className="mt-5 text-center">No data found</div>
       )}
       </div>
+      <EditFarmer farmer={{}} />
+      </Fragment>
   );
 };
 export default FarmersList;

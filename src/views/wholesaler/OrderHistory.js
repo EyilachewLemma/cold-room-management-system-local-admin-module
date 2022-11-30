@@ -19,7 +19,7 @@ const OrderHistory = () => {
   const featchOrder = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
     try{
-     var response = await apiClient.get(`admin/wholesalers/orders/${whId}`)
+     var response = await apiClient.get(`localadmin/wholesalers/orders/${whId}`)
      if(response.status === 200){
       dispatch(whOrAction.setWhOrders(response.data || []))
      }

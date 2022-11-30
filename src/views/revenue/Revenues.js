@@ -132,7 +132,7 @@ const Revenue = () => {
       }
      {
       !revenues?.data_name?.length &&(
-        <div className="mt-5 text-center">No data found</div>
+        <div className="mt-5 text-center">No revenue data found</div>
       )
      }
       </div>

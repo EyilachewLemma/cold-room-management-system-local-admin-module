@@ -2,7 +2,7 @@ import { useRef,useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Table from "react-bootstrap/Table";
-import Dropdown from 'react-bootstrap/Dropdown';
+// import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import ReactToPrint from "react-to-print";
 import { useSelector,useDispatch } from "react-redux";
@@ -49,9 +49,9 @@ const ProductList = () => {
   const ViewDetailHandler = (prId) =>{
     navigate(`/products/${prId}`)
   }
-  const editProduct = (product) =>{
+  // const editProduct = (product) =>{
     
-  }
+  // }
 
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
@@ -124,20 +124,23 @@ const ProductList = () => {
               <td className="p-4">{product.product.name}</td>
               <td className="pb-0 mb-0">
               <div className={`${classes.imgSize} mt-2`}>
-                <img src={product.product.imageUrl} alt="product_Image" className={`${classes.img} img-fluid`} />
+                <img src={product.product.imageUrl} alt="product_Image" className={`${classes.img} img-fluid m-0`} />
                 </div>
               </td>
               <td className="p-4">{product.totalProduct}</td>
               <td className={`onPrintDnone`}>
-              <Dropdown>
-      <Dropdown.Toggle variant="none" id="dropdown-basic">
-      <i className="fas fa-ellipsis-v"></i>
-      </Dropdown.Toggle>
-      <Dropdown.Menu className={classes.dropdownBg}>
-      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>ViewDetailHandler(product.productId)}>View Detail</Button>
-      <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>editProduct(product)}>View Rent Fee</Button>
-        </Dropdown.Menu>
-    </Dropdown>
+              <button className={`${classes.editBtn} fs-5 mt-2`} onClick={()=>ViewDetailHandler(product.productId)}><i className="fas fa-eye"></i></button>
+             {
+    //           <Dropdown>
+    //   <Dropdown.Toggle variant="none" id="dropdown-basic">
+    //   <i className="fas fa-ellipsis-v"></i>
+    //   </Dropdown.Toggle>
+    //   <Dropdown.Menu className={classes.dropdownBg}>    
+    //    <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>ViewDetailHandler(product.productId)}>View Detail</Button>     
+    //    <Button variant="none" className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`} onClick={()=>editProduct(product)}>View Rent Fee</Button>
+    //   </Dropdown.Menu>
+    // </Dropdown>
+             }
               </td>
             </tr>
             ))

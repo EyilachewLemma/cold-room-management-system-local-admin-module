@@ -20,7 +20,7 @@ const Sales = () => {
    const  featchSaleses = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/sales?search=${searchBy.current.value}&coldRoomId=${''}&date=${''}`)
+   var response = await apiClient.get(`localadmin/sales?search=${searchBy.current.value}&coldRoomId=${''}&date=${''}`)
    if(response.status === 200){
     dispatch(salesAction.setSales(response.data || []))
    }
@@ -133,7 +133,7 @@ const Sales = () => {
       }
       {
         !saleses.data_name?.length && (
-          <div className="mt-5 text-center">No data found</div>
+          <div className="mt-5 text-center">No sales data found</div>
         )
       }
       </div>

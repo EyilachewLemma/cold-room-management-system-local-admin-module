@@ -23,7 +23,7 @@ const WholeSalerList = () => {
   const featchWholesalers = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/wholesalers?search=${searchBy.current.value}`)
+   var response = await apiClient.get(`localadmin/wholesalers?search=${searchBy.current.value}`)
    if(response.status === 200){
     dispatch(wholesalerAction.setWholesalers(response.data || []))
    }
@@ -81,7 +81,7 @@ const WholeSalerList = () => {
         />
         </div>
       </div>
-      {wholesalers?.length && (
+      {wholesalers?.length > 0 && (
     <div className="mt-4">
         <Table responsive="md">
           <thead className={classes.header}>
@@ -121,8 +121,8 @@ const WholeSalerList = () => {
       </div>
       )}
       {
-        !wholesalers?.length &&(
-          <div className="mt-5 text-center">Empty Data</div>
+        wholesalers?.length === 0 &&(
+          <div className="mt-5 text-center">No wholesaler data found</div>
         )
       }
       </div>

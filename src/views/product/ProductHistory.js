@@ -3,6 +3,7 @@ import Table from "react-bootstrap/Table";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button"
+import Pagination from 'react-bootstrap/Pagination';
 import ReactToPrint from "react-to-print";
 import EditFarmerProduct from "./EditFarmerProduct";
 import apiClient from "../../url/index";
@@ -20,9 +21,13 @@ const ProductHistory = () => {
   const [show,setShow] = useState(false)
   const [product,setProduct] = useState({})
   const [showConfirm,setShowConfirm] = useState(false)
+  const [currentPage,setCurrentPage] = useState(1)
+  const [totalProduct,setTotalProduct] = useState(null)
   const [id,setId] = useState(null)
   const dispatch = useDispatch()
-  const products = useSelector(state =>state.product.productHistries)
+  const productsHistry = useSelector(state =>state.product.productHistries)
+  const user = useSelector(state=>state.user.data)
+  const products = useSelector(state=>state.product.products)
   const navigate = useNavigate()
   const componentRef = useRef()  
   const searchBy = useRef()
@@ -30,7 +35,7 @@ const ProductHistory = () => {
   async function  featchProductHistory(){
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`localadmin/products/history`)
+   var response = await apiClient.get(`localadmin/products/history?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value.trim()}&date=${''}&page=${currentPage}`)
    if(response.status === 200){
     dispatch(productAction.setProductHistory(response.data || []))
    }
@@ -38,22 +43,38 @@ const ProductHistory = () => {
   catch(err){}
   finally {dispatch(isLoadingAction.setIsLoading(false))}
 }
-  useEffect( ()=>{
-    
+  useEffect( ()=>{    
   featchProductHistory()
+  let sum=0
+  products.forEach(product=>{
+    sum=sum+product.totalProduct
+  })
+  setTotalProduct(sum)
+  console.log('sum==',sum)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[currentPage,products])
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
       featchProductHistory()
     }
   }
+  console.log('product--=-',products)
   const searchHandler = () =>{
     featchProductHistory()
   }
-  const filterByDateHandler = () =>{}
+  const filterByDateHandler = async(e) =>{
+    dispatch(isLoadingAction.setIsLoading(true))
+    try{
+     var response = await apiClient.get(`localadmin/products/history?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value.trim()}&date=${e.target.value}&page=${currentPage}`)
+     if(response.status === 200){
+      dispatch(productAction.setProductHistory(response.data || []))
+     }
+    }
+    catch(err){}
+    finally {dispatch(isLoadingAction.setIsLoading(false))}
+  }
   const openDeleteConfirmModal = (id) =>{
-      setId(id)
+        setId(id)
         setShowConfirm(true)
       }
       const closeConfirmModal = () =>{
@@ -77,6 +98,15 @@ const ProductHistory = () => {
   const closeEditModal = ()=>{
     setShow(false)
   }
+  const setPage = (nomber) =>{
+    setCurrentPage(nomber)
+  }
+  const setNextPage = () =>{
+    setCurrentPage(prevValue=>prevValue+1)
+  }
+  const setPrevPage = ()=>{
+    setCurrentPage(prevValue=>prevValue - 1)
+  }
   return (
     <Fragment>
     <Button onClick={()=>navigate(-1)} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 
@@ -85,9 +115,9 @@ const ProductHistory = () => {
       <div className="d-flex justify-content-between">
       <div>
         <div className="mt-3">
-          <span className="fw-bold">Cold room</span>: Bahir Dar</div>
+          <span className="fw-bold">Cold room</span>: {user.coldRoom?.name}</div>
         <div className="mt-3">
-          <span className="fw-bold">Total product stocks</span>: 1000kg
+          <span className="fw-bold">Total product stocks</span>: {totalProduct}kg
         </div>
       </div>
     </div>
@@ -125,7 +155,7 @@ const ProductHistory = () => {
         />
         </div>
       </div>
-      {products?.length > 0 && (
+      {productsHistry.data_name?.length > 0 && (
       <div className="mt-4">
         <Table responsive="md">
           <thead className={classes.header}>
@@ -143,7 +173,7 @@ const ProductHistory = () => {
           </thead>
           <tbody>
           {
-            products.map((product) =>(
+            productsHistry.data_name.map((product) =>(
               <tr className={classes.row} key={product.id}>
               <td className="py-4">{product.farmer.fName+' '+product.farmer.lName}</td>
               <td className="py-4">{product.warehousePosition}</td>
@@ -156,7 +186,7 @@ const ProductHistory = () => {
               <td>
               <div className="d-flex">
               <button className={`${classes.editBtn} fs-5`} onClick={()=>openEditModal(product)}><i className="fas fa-edit"></i></button>
-              <button className={`${classes.editBtn} fs-5 ms-2`} onClick={()=>openDeleteConfirmModal(product.id)}> <i class="fas fa-trash"></i></button>
+              <button className={`${classes.editBtn} fs-5 ms-2`} onClick={()=>openDeleteConfirmModal(product.id)}> <i className="fas fa-trash"></i></button>
               </div>
              
               </td>
@@ -167,6 +197,15 @@ const ProductHistory = () => {
            
           </tbody>
         </Table>
+        <div className="d-flex justify-content-end mt-5">
+        <Pagination>
+        <Pagination.Prev onClick={setPrevPage} disabled={currentPage === 1} active={currentPage> 1}/>
+        <Pagination.Item onClick={()=>setPage(1)} >{1}</Pagination.Item>
+        <Pagination.Item disabled>{currentPage+'/'+(productsHistry.totalPages-1)}</Pagination.Item>
+        <Pagination.Item onClick={()=>setPage(+productsHistry.totalPages-1)}>{+productsHistry.totalPages-1}</Pagination.Item>
+        <Pagination.Next onClick={setNextPage} disabled={+productsHistry.totalPages-1 === currentPage} active={currentPage<productsHistry.totalPages-1}/>
+      </Pagination>
+        </div>
       </div>
       )}
       </div>
