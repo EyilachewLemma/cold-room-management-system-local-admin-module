@@ -6,10 +6,10 @@ import ChangePassword from './ChangePassword';
 import { useNavigate } from 'react-router-dom';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import {useDispatch,useSelector} from 'react-redux'
-import { notificationAction } from '../store/slices/NotificationSlice';
-import { isLoadingAction } from '../store/slices/spinerSlice';
+// import { notificationAction } from '../store/slices/NotificationSlice';
+// import { isLoadingAction } from '../store/slices/spinerSlice';
 import { userAction } from '../store/slices/UserSlice';
-import apiClient from '../url/index'
+// import apiClient from '../url/index'
 import classes from './TheHeader.module.css'
 
 const TheHeader = () =>{
@@ -21,20 +21,20 @@ const TheHeader = () =>{
   const navigate = useNavigate()
  
   useEffect(()=>{
-   const fetchNotification = async() =>{
-    dispatch(isLoadingAction.setIsLoading(true))
-      try{
-        const response = await apiClient.get('admin/notification')
-        if(response.status === 200){
-          dispatch(notificationAction.setNotifications(response.data))
-        }
-      }
-      catch(err){console.log('err',err)}
-      finally{
-        dispatch(isLoadingAction.setIsLoading(false))
-      }
-   }
-   fetchNotification()
+  //  const fetchNotification = async() =>{
+  //   dispatch(isLoadingAction.setIsLoading(true))
+  //     try{
+  //       const response = await apiClient.get('admin/notification')
+  //       if(response.status === 200){
+  //         dispatch(notificationAction.setNotifications(response.data))
+  //       }
+  //     }
+  //     catch(err){console.log('err',err)}
+  //     finally{
+  //       dispatch(isLoadingAction.setIsLoading(false))
+  //     }
+  //  }
+  //  fetchNotification()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
   const logoutHandler = () =>{
@@ -47,9 +47,9 @@ const TheHeader = () =>{
     // navigate('/account')
     setShowChangePassword(true)
   } 
-  const openNotification = () =>{
-    setShow(true)
-  } 
+  // const openNotification = () =>{
+  //   setShow(true)
+  // } 
   const handleClose = ()=>{
     setShow(false)
     setShowChangePassword(false)
@@ -61,14 +61,16 @@ const TheHeader = () =>{
         <span className={classes.yellowText+' fw-bold fs-4'}>RENSYS</span>
         <span className={classes.greenText+' fw-bold fs-4'}>ENGINEERING</span>
        </div>
-       <div className='ms-auto me-3'>
-       <Button className={classes.notificationBtn} onClick={openNotification}>
-       <div className='text-white position-relative'><i className="fa-regular fa-bell fs-2"></i>
-       <span className={classes.bage+' rounded-circle px-1 small'}>12</span>
-       </div>      
-    </Button>       
-       </div>
-      <div className='border rounded pe-2'>
+      {
+    //      <div className='ms-auto me-3'>
+    //    <Button className={classes.notificationBtn} onClick={openNotification}>
+    //    <div className='text-white position-relative'><i className="fa-regular fa-bell fs-2"></i>
+    //    <span className={classes.bage+' rounded-circle px-1 small'}>12</span>
+    //    </div>      
+    // </Button>       
+    //    </div>
+      }
+      <div className='border rounded pe-2 ms-auto'>
       <Dropdown>
         <Dropdown.Toggle className={classes.dropDown+' d-flex align-items-center'} id="profile-dropdown">
         <div className='d-flex overflow-hidden ms-2 align-items-center'>

@@ -162,7 +162,7 @@ const searchHandler = () =>{
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
-              <th>Order-Id</th>
+              <th>Order-Code</th>
               <th>Wholesaler</th>
               <th>Ordered Date</th>
               <th>Total Price</th>

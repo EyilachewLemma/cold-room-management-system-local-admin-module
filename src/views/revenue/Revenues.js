@@ -1,8 +1,9 @@
-import { Fragment,useEffect,useRef } from "react";
+import { Fragment,useEffect,useRef,useState } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import { revenueAction } from "../../store/slices/RevenueSlice";
 import { isLoadingAction } from "../../store/slices/spinerSlice";
 import Form from "react-bootstrap/Form";
+import Pagination from 'react-bootstrap/Pagination'
 import InputGroup from "react-bootstrap/InputGroup";
 import Table from "react-bootstrap/Table";
 import ReactToPrint from "react-to-print";
@@ -12,7 +13,7 @@ import classes from "./Revenues.module.css";
 
 
 const Revenue = () => {
-
+  const [currentPage,setCurrentPage] =useState(1)
   const dispatch = useDispatch()
   const revenues = useSelector(state =>state.revenue.revenues)
   const componentRef = useRef()
@@ -21,7 +22,7 @@ const Revenue = () => {
   const  featchRevenues = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/revenues?search=${searchBy.current.value}`)
+   var response = await apiClient.get(`localadmin/revenues?search=${searchBy.current.value}&page=${currentPage}`)
    if(response.status === 200){
     dispatch(revenueAction.setRevenues(response.data || []))
    }
@@ -32,7 +33,7 @@ const Revenue = () => {
   useEffect( ()=>{
       featchRevenues()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[currentPage])
 
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
@@ -45,13 +46,22 @@ const Revenue = () => {
     const filterByDateHandler = async(e) =>{
       dispatch(isLoadingAction.setIsLoading(true))
       try{
-       var response = await apiClient.get(`admin/revenues?search=${searchBy.current.value}&coldRoomId=${''}&date=${e.target.value}`)
+       var response = await apiClient.get(`localadmin/revenues?search=${searchBy.current.value}&coldRoomId=${''}&date=${e.target.value}`)
        if(response.status === 200){
         dispatch(revenueAction.setRevenues(response.data || []))
        }
       }
       catch(err){}
       finally {dispatch(isLoadingAction.setIsLoading(false))}
+    }
+    const setPage = (nomber) =>{
+      setCurrentPage(nomber)
+    }
+    const setNextPage = () =>{
+      setCurrentPage(prevValue=>prevValue+1)
+    }
+    const setPrevPage = ()=>{
+      setCurrentPage(prevValue=>prevValue - 1)
     }
   return (
     <Fragment>
@@ -127,6 +137,15 @@ const Revenue = () => {
              
             </tbody>
           </Table>
+          <div className="d-flex justify-content-end mt-5">
+          <Pagination>
+          <Pagination.Prev onClick={setPrevPage} disabled={currentPage === 1} active={currentPage> 1}/>
+          <Pagination.Item onClick={()=>setPage(1)} >{1}</Pagination.Item>
+          <Pagination.Item disabled>{currentPage+'/'+revenues.totalPages}</Pagination.Item>
+          <Pagination.Item onClick={()=>setPage(revenues.totalPages)}>{revenues.totalPages}</Pagination.Item>
+          <Pagination.Next onClick={setNextPage} disabled={revenues.totalPages === currentPage} active={currentPage<revenues.totalPages}/>
+        </Pagination>
+          </div>
         </div>
         )
       }

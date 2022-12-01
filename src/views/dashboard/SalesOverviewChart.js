@@ -1,4 +1,5 @@
 import {useState,useEffect} from 'react'
+import { useSelector } from 'react-redux';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Form from 'react-bootstrap/Form';
 import apiClient from '../../url/index';
@@ -56,6 +57,7 @@ import addYear from './addYear';
 
 const SalesOverviewChart = () =>{
   const [salesOverviews,setSalesOverview] = useState(data)
+  const user = useSelector(state=>state.user.data)
   const currentYear = new Date().getFullYear()*1
   const [selectedValue,setSelectedValue] = useState(currentYear)
   const years = addYear()
@@ -63,7 +65,7 @@ const SalesOverviewChart = () =>{
   const filterByYearHandler = async(e)=>{
     setSelectedValue(e.target.value)
     try{
-      const response  = await apiClient.get(`admin/dashboard/bar?year=${e.target.value}`)
+      const response  = await apiClient.get(`localadmin/dashboard/bar?year=${e.target.value}&coldRoomId=${user.coldRoom.id}`)
       if(response.status === 200){
         const datas = response.data.map(month=>{
           return {month:month.month.slice(0,3),sales:month.count}
@@ -80,7 +82,7 @@ const SalesOverviewChart = () =>{
     const fetchCurrentYearOrders = async() =>{
       
       try{
-        const response  = await apiClient.get(`admin/dashboard/bar?year=${currentYear}`)
+        const response  = await apiClient.get(`localadmin/dashboard/bar?year=${currentYear}&coldRoomId=${user.coldRoom.id}`)
         if(response.status === 200){
           const datas = response.data.map(month=>{
             return {month:month.month.slice(0,3),sales:month.count}

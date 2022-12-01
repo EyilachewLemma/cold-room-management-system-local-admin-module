@@ -1,20 +1,65 @@
-import React,{useRef} from "react";
+import React,{useRef,useEffect,useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from 'react-bootstrap/Form';
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button"
 import ReactToPrint from "react-to-print";
+import { useDispatch,useSelector } from "react-redux";
+import { orderAction } from "../../store/slices/OrderSlice";
 import classes from './Orders.module.css'
+import apiClient from "../../url";
 
-const OrderStatus = (props) => {
+const OrderStatus = ({show,order,onClose}) => {
+  const [orderLogs,setOrderLog] = useState([])
+  const [orderStatus,setOrderStatus] = useState('pending')
+  const [error,setError] = useState('')
+  const user = useSelector(state=>state.user.data)
   const componentRef = useRef()
+  const dispatch = useDispatch()
+ useEffect(()=>{
+  setOrderLog(order.orderLogs)
+  setOrderStatus(order.orderStatus)
+ },[order])
+  const changeOrderStatus = async(e)=>{
+    setOrderStatus(e.target.value)
+    const newStatus = {
+      orderStatus:e.target.value,
+      orderId:order.id,
+      changedBy:user.id
+    }
+    let response
+    try{
+      response = await apiClient.put(`localadmin/orders/${order.id}`,newStatus)
+      if(response.status=== 200){
+        setOrderLog(prevValue=>{
+          return [...prevValue,response.data]
+        })
+        console.log('id2=',order.id)
+        dispatch(orderAction.setOrderStatus({status:response.data.changedTo,id:order.id}))
+        console.log('id3=',order.id)
+      }
+      
+    }
+    catch(err){
+      if(response.status === 403){
+        setError('imposible to change the status of completed order')
+      }
+      else{
+        setError('faild to change order status')
+        console.log('err=',err)
+      }
+    
+     
+    }
+  }
   const closeModalHandler = () => {
-    props.onClose();
+    onClose();
+    setError('')
   };
   return (
     <>
       <Modal
-        show={props.show}
+        show={show}
         size="xl"
         onHide={closeModalHandler}
         backdrop="static"
@@ -25,14 +70,14 @@ const OrderStatus = (props) => {
         </Modal.Header>
         <Modal.Body className={classes.modalBg}>
         <div className="px-4 pb-3" ref={componentRef}>
-          <div className="fw-bold px-3">Order id: {props.order.orderCode}</div>
-          <div className=" fw-bold mt-3 px-3">Order Status : {props.order.orderStatus}</div>
+          <div className="fw-bold px-3">Order Code: {order.orderCode}</div>
+          <div className=" fw-bold mt-3 px-3">Order Status : {order.orderStatus}</div>
           <div className="d-flex align-items-center px-3 pt-2">              
             <div className="me-5 onPrintDnone">
-            <Form.Select aria-label="Default select example">
-            <option value='0'>Change order Status</option>
-            <option value="1">Completed</option>
-            <option value="2">pending</option>
+            <Form.Select aria-label="order status" value={orderStatus} onChange={changeOrderStatus}>
+            <option value='pending'>Pending</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
           </Form.Select>
             </div>
             <div className="ms-auto">
@@ -58,7 +103,7 @@ const OrderStatus = (props) => {
             </thead>
             <tbody>
             {
-              props.order.orderLogs?.map((order) =>(
+              orderLogs?.map((order) =>(
                 <tr className={classes.tdPadding} key={order.id}>
                 <td className='py-3'>{order.updatedAt.slice(0,10)}</td>
                 <td className="p-2">{order.changedFrom}</td>
@@ -76,6 +121,7 @@ const OrderStatus = (props) => {
        <div className="onPrintDnone">
        </div>
         </div>
+        <div className="mt-3 text-center text-danger">{error}</div>
         </Modal.Body>       
        
       </Modal>

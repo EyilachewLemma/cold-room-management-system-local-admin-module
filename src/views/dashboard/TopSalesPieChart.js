@@ -1,6 +1,7 @@
 import {useState,useEffect} from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import Form from 'react-bootstrap/Form';
+import { useSelector } from 'react-redux';
 import addYear from './addYear';
 import apiClient from '../../url/index';
 import classes from './TopSalesPieChart.module.css'
@@ -27,6 +28,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 };
 
  const SalesPieChart = () => {
+  const user = useSelector(state=>state.user.data)
   const [salesOverview,setSalesOverview] = useState([])
   const currentYear = new Date().getFullYear()*1
   const [selectedValue,setSelectedValue] = useState(currentYear)
@@ -65,7 +67,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   useEffect(()=>{
     const fetchCurrentYearOrders = async() =>{
       try{
-        const response  = await apiClient.get(`admin/dashboard/pie?year=${currentYear}`)
+        const response  = await apiClient.get(`admin/dashboard/pie?year=${currentYear}&coldRoomId=${user.coldRoom.id}`)
         if(response.status === 200){
           console.log('piechart data=',response.data)
           rearrangeResponse(response)
@@ -80,7 +82,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 const filterByYearHandler = async(e)=>{
   setSelectedValue(e.target.value)
   try{
-    const response  = await apiClient.get(`admin/dashboard/pie?year=${e.target.value}`)
+    const response  = await apiClient.get(`localadmin/dashboard/pie?year=${e.target.value}`)
     if(response.status === 200){
       rearrangeResponse(response)
     }
@@ -101,7 +103,7 @@ const filterByYearHandler = async(e)=>{
       </Form.Select>
             </div>
         </div>
-        <ResponsiveContainer width="100%" height="80%">
+        <ResponsiveContainer width="100%" height="70%">
         <PieChart width={400} height={400}>
           <Pie
             data={salesOverview}

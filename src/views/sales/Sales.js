@@ -1,4 +1,4 @@
-import { Fragment,useEffect,useRef } from "react";
+import { Fragment,useEffect,useRef,useState } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import { salesAction } from "../../store/slices/SalesSlice";
 import { isLoadingAction } from "../../store/slices/spinerSlice";
@@ -7,12 +7,14 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Table from "react-bootstrap/Table";
 import ReactToPrint from "react-to-print";
 import Button from 'react-bootstrap/Button';
+import Pagination from 'react-bootstrap/Pagination'
 import apiClient from "../../url/index";
 import classes from "./Sales.module.css";
 
 
 const Sales = () => {
-
+  const [currentPage,setCurrentPage] =useState(1)
+  const user = useSelector(state =>state.user.data)
   const dispatch = useDispatch()
   const saleses = useSelector(state =>state.sales.saleses)
   const componentRef = useRef()
@@ -20,7 +22,7 @@ const Sales = () => {
    const  featchSaleses = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`localadmin/sales?search=${searchBy.current.value}&coldRoomId=${''}&date=${''}`)
+   var response = await apiClient.get(`localadmin/sales?search=${searchBy.current.value}&coldRoomId=${user.coldRoom.id}&date=${''}&page=${currentPage}`)
    if(response.status === 200){
     dispatch(salesAction.setSales(response.data || []))
    }
@@ -32,7 +34,7 @@ const Sales = () => {
     
   featchSaleses()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[currentPage])
 
   console.log('saleses from',saleses)
   const enterKeyHandler = (event) =>{
@@ -47,7 +49,7 @@ const Sales = () => {
     const filterByDateHandler = async(e) =>{
       dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/sales?search=${searchBy.current.value}&coldRoomId=${''}&date=${e.target.value}`)
+   var response = await apiClient.get(`localadmin/sales?search=${searchBy.current.value}&coldRoomId=${user.coldRoom.id}&date=${e.target.value}&page=${currentPage}`)
    if(response.status === 200){
     dispatch(salesAction.setSales(response.data || []))
    }
@@ -55,6 +57,15 @@ const Sales = () => {
   catch(err){}
   finally {dispatch(isLoadingAction.setIsLoading(false))}
       console.log('date=',e.target.value)
+    }
+    const setPage = (nomber) =>{
+      setCurrentPage(nomber)
+    }
+    const setNextPage = () =>{
+      setCurrentPage(prevValue=>prevValue+1)
+    }
+    const setPrevPage = ()=>{
+      setCurrentPage(prevValue=>prevValue - 1)
     }
   return (
     <Fragment>
@@ -100,7 +111,7 @@ const Sales = () => {
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
-              <th>Order Id</th>
+              <th>Order Code</th>
               <th>Wholesaler Name</th>
               <th>Order Date</th>
               <th>Total Price</th>
@@ -128,6 +139,15 @@ const Sales = () => {
            
           </tbody>
         </Table>
+        <div className="d-flex justify-content-end mt-5">
+        <Pagination>
+        <Pagination.Prev onClick={setPrevPage} disabled={currentPage === 1} active={currentPage> 1}/>
+        <Pagination.Item onClick={()=>setPage(1)} >{1}</Pagination.Item>
+        <Pagination.Item disabled>{currentPage+'/'+saleses.totalPages}</Pagination.Item>
+        <Pagination.Item onClick={()=>setPage(saleses.totalPages)}>{saleses.totalPages}</Pagination.Item>
+        <Pagination.Next onClick={setNextPage} disabled={saleses.totalPages === currentPage} active={currentPage<saleses.totalPages}/>
+      </Pagination>
+        </div>
       </div>
       )
       }

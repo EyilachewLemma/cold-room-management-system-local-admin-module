@@ -42,9 +42,9 @@ const FarmersList = () => {
   const handlBalanceHistory = (tbc,id) =>{
     navigate(`/farmers/${id}/balance/${tbc}`)
   }
-  const handlRentFee = (tr,id) =>{
-    navigate(`/farmers/${id}/rent-fee/${tr}`)
-}
+//   const handlRentFee = (tr,id) =>{
+//     navigate(`/farmers/${id}/rent-fee/${tr}`)
+// }
 const handlProductHistory = (tp,id) =>{
     navigate(`/farmers/${id}/product-history/${tp}`)
 }
@@ -98,7 +98,7 @@ const searchHandler = () =>{
               <th>NO</th>
               <th>Farmer Name</th>
               <th>Location</th>
-              <th>Product stock in Cold room(Kg)</th>
+              <th>Product stock(Kg)</th>
               <th>Product Rent Fee(ETB)</th>
               <th>Balance(ETB)</th>
               <th className=""></th>
@@ -125,10 +125,12 @@ const searchHandler = () =>{
         variant="none"
         className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}
         onClick={()=>handlBalanceHistory(farmer.totalBalance,farmer.id)}>Balance History</Button>
-      <Button
-        variant="none"
-        className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}
-         onClick={()=>handlRentFee(farmer.totalRent,farmer.id)}>Rent Fee</Button>
+     {
+      // <Button
+      // variant="none"
+      // className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}
+      //  onClick={()=>handlRentFee(farmer.totalRent,farmer.id)}>Rent Fee</Button>
+     }
       <Button
         variant="none"
          className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}

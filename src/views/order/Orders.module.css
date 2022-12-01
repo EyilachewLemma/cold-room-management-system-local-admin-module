@@ -54,3 +54,9 @@
 .modalBg{
     background-color: #d9d9d9!important;
 }
+.errorBorder{
+    border-color: red!important;
+}
+.errorText{
+    color: red!important;
+}

@@ -1,5 +1,4 @@
 import { Fragment,useEffect,useRef } from "react";
-// import { useNavigate } from "react-router-dom";
 import { useSelector,useDispatch } from "react-redux";
 import { balanceAction } from "../../store/slices/BalanceSlice";
 import { isLoadingAction } from "../../store/slices/spinerSlice";
@@ -17,13 +16,14 @@ const BalanceHistory = () => {
 
   const dispatch = useDispatch()
   const balances = useSelector(state =>state.balance.balances)
+  const user = useSelector(state=>state.user.data)
   const navigate = useNavigate()
   const componentRef = useRef()
   const {tb,faId} = useParams()
   async function  featchBalances(){
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/farmers/balances/${faId}`)
+   var response = await apiClient.get(`localadmin/farmers/balances/${faId}`)
    if(response.status === 200){
     dispatch(balanceAction.setBalances(response.data || []))
    }
@@ -43,7 +43,7 @@ const BalanceHistory = () => {
     <Button onClick={()=>navigate(-1)} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 
     <div ref={componentRef}>
     <div className="fw-bold">Farmers Balance History</div>
-    <div className="mt-2"><span className="fw-bold">Cold Room</span>: null</div>
+    <div className="mt-2"><span className="fw-bold">Cold Room</span>: {user.coldRoom.name}</div>
       <div className="mt-3">
         <span className="fw-bold">Farmer</span>: {balances.farmer?.fName+' '+balances.farmer?.lName}
       </div>
@@ -65,14 +65,6 @@ const BalanceHistory = () => {
             aria-describedby="searchbyproductName"
           />
         </InputGroup>
-        <div className="ms-3 onPrintDnone">
-        <Form.Select aria-label="Default select example">
-        <option value='all'>All</option>
-        <option value="1">Type 1</option>
-        <option value="2">Type 2</option>
-        <option value="3">Type 3</option>
-      </Form.Select>
-        </div>
       <div className="ms-3 me-3 onPrintDnone">
       <Form.Group controlId="search-by-date">
       <Form.Control type="date" />
@@ -92,14 +84,17 @@ const BalanceHistory = () => {
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
-              <th>Order-ID</th>
+              <th>Order Code</th>
               <th>Product Name</th>
               <th>Product Type</th>
-              <th>Order Date(GC)</th>
-              <th>Quantity(Kg)</th>
-              <th>Price per(ETB)</th>
+              <th>Order Date</th>
+              <th>Qty(Kg)</th>
+              <th>Price(ETB)</th>
+              <th>Rent Price</th>
+              <th>Rent Fee</th>
               <th>Balance(ETB)</th>
-              <th>Withdraw Status</th>
+              <th>Net Balance(ETB)</th>
+              <th>Withdraw</th>
             </tr>
           </thead>
           <tbody>
@@ -112,7 +107,12 @@ const BalanceHistory = () => {
               <td className="p-3">{balance.orderDate.slice(0,10)}</td>
               <td className="p-3">{balance.quantity}</td>
               <td className="p-3 text-center">{balance.price}</td>
+              <td className="p-3 text-center">{balance.rentPrice}</td>
+              <td className="p-3 text-center">{balance.rentAmount}</td>
               <td className="p-3 text-center">{balance.balanceAmount}</td>
+              <td className="p-3 text-center">
+              {balance.balanceAmount - balance.rentPrice}
+              </td>
             <td className="p-3 text-center">{balance.state}</td>
             </tr>
             ))

@@ -7,13 +7,14 @@ import { useDispatch} from "react-redux";
 import apiClient from "../../url/index";
 import classes from './DashBoard.module.css'
 const DashBoard = () =>{
+    // const user = useSelector(state=>state.user.data)
     const [datas,setDatas] = useState({})
     const dispatch = useDispatch()
     const  featchDashboardData = async () =>{   
       
       dispatch(isLoadingAction.setIsLoading(true))
     try{
-     var response = await apiClient.get(`admin/dashboard/data`)
+     var response = await apiClient.get(`localadmin/dashboard/data`)
      if(response.status === 200){
         setDatas(response.data)
 

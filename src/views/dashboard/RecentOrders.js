@@ -2,17 +2,18 @@ import { useState,useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 import {Link} from 'react-router-dom'
 import { isLoadingAction } from "../../store/slices/spinerSlice";
-import { useDispatch} from "react-redux";
+import { useDispatch,useSelector} from "react-redux";
 import apiClient from '../../url/index';
 import classes from './RecentOrders.module.css'
 const RecentOrders = () =>{
   const [recentOrders,setRecentOrders] = useState([])
+  const user = useSelector(state=>state.user.data)
   const dispatch = useDispatch()
   const  featchOrders = async () =>{   
       
     dispatch(isLoadingAction.setIsLoading(false))
   try{
-   var response = await apiClient.get(`admin/orders`)
+   var response = await apiClient.get(`localadmin/orders?coldRoomId=${user.coldRoom.id}`)
    if(response.status === 200){
     const orders = response.data?.data_name.slice(0,8)
     setRecentOrders(orders)

@@ -1,20 +1,88 @@
-import React,{useRef} from "react";
+import React,{useRef,useState,useEffect} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from 'react-bootstrap/Form';
 import Table from "react-bootstrap/Table";
 import ReactToPrint from "react-to-print";
 import Button from "react-bootstrap/Button";
+import SaveButton from '../../components/Button'
+import { orderAction } from "../../store/slices/OrderSlice";
+import { useSelector,useDispatch } from "react-redux";
+import { buttonAction } from "../../store/slices/ButtonSpinerSlice";
+import apiClient from "../../url";
 import classes from './Orders.module.css'
 
-const PaymentStatus = (props) => {
+const PaymentStatus = ({show,order,onClose}) => {
+  const [paymentLogs,setPaymentLog] = useState([])
+  const [paymentStatus,setPaymentStatus] = useState('unpaid')
+  const [amount,setAmount]= useState(null)
+  const [errors,setErrors] = useState({amount:'',notify:''})
+  const user = useSelector(state=>state.user.data)
   const componentRef = useRef()
+  const dispatch = useDispatch()
+  useEffect(()=>{
+    setPaymentLog(order.orderPaymentLogs)
+    setPaymentStatus(order.paymentStatus)
+  },[order])
+  console.log('payment log=',order)
+  const changeHandler = async(e)=>{
+    setAmount(e.target.value)  
+  }
+  const savePayment = async()=>{
+    let err = ''
+    if(!amount){
+      err= 'please enter payment amount'
+    }
+    setErrors(prevErr=>{
+      return {...prevErr,amount:err}
+    })
+    if(!err){
+      const newpayment = {
+        amount:amount,
+        orderId:order.id,
+        changedBy:user.id
+      }
+      let response
+    try{
+      dispatch(buttonAction.setBtnSpiner(true))
+      response = await apiClient.put(`localadmin/orders/payment/${order.id}`,newpayment)
+      if(response.status=== 200){
+        setPaymentLog(prevValue=>{
+          return [...prevValue,response.data.paymentLog]
+        })
+        setPaymentStatus(response.data.paymentStatus)
+        setPaymentStatus(response.data?.paymentStatus)
+        dispatch(orderAction.setPaymentStatus({status:response.data.changedTo,id:order.id}))
+      }
+      
+    }
+    catch(err){
+      if(response.status === 403){
+        console.log('err==',err)
+        setErrors(preErr=>{
+          return {...preErr,notify:err.response.data}
+          })
+        }
+        else{
+          setErrors(preErr=>{
+            return {...preErr,notify:'faild to save payment'}
+            })
+        }
+    }
+    finally{
+      dispatch(buttonAction.setBtnSpiner(false))
+    }
+    
+    }
+
+  }
+  
   const closeModalHandler = () => {
-    props.onClose();
+    onClose();
   };
   return (
     <>
       <Modal
-        show={props.show}
+        show={show}
         size="xl"
         onHide={closeModalHandler}
         backdrop="static"
@@ -25,17 +93,27 @@ const PaymentStatus = (props) => {
     </Modal.Header>
         <Modal.Body className={classes.modalBg}>
         <div className="px-4 py-3" ref={componentRef}>
-          <div className="fw-bold px-3 pt-3">Order id: {props.order.orderCode}</div>
-          <div className=" fw-bold mt-3 px-3">Payment Status : {props.order.paymentStatus}</div>
+        <div className="d-flex align-items-center">
+        <div>
+        <div className="fw-bold px-3 pt-3">Order Code: {order.orderCode}</div>
+        <div className=" fw-bold mt-3 px-3">Payment Status : {paymentStatus}</div>
+        </div>
+           <div className="d-flex ms-5 align-items-center">
+           <Form.Group className="mb-3 onPrintDnone" controlId="payment">
+        <Form.Label>Enter Amount</Form.Label>
+        <Form.Control
+         type="number"
+         onChange={changeHandler}
+         className={errors.amount?classes.errorBorder:''}
+         />
+         <span className={classes.errorText}>{errors.amount}</span> 
+      </Form.Group>
+      <div className="ms-5 mt-2 onPrintDnone">
+      <SaveButton title='Save' onSave={savePayment} />
+      </div>
+           </div>
+        </div>
           <div className="d-flex align-items-center px-3 pt-2">              
-            <div className="me-5 onPrintDnone">
-            <Form.Select aria-label="Default select example">
-            <option value='0'>Change Payment Status</option>
-            <option value="1">Unpaid</option>
-            <option value="2">Partially Paid</option>
-            <option value="2">Fully Paid</option>
-          </Form.Select>
-            </div>
             <div className="ms-auto">
             <ReactToPrint
             trigger={()=><Button variant='none' className="exportbtn onPrintDnone py-1"><span><i className="fas fa-file-export"></i></span> Export</Button>}
@@ -50,21 +128,21 @@ const PaymentStatus = (props) => {
           <Table responsive="md">
             <thead className=''>
               <tr>
-                <th>Changed Date</th>
-                <th>Changed From</th>
-                <th>Changed To</th>
-                <th>Changed By</th>
+              <th>No</th>
+                <th>Paid Date</th>
+                <th>Paid Amount</th>
+                <th>Added By</th>
                 
               </tr>
             </thead>
             <tbody>
             {
-              props.order.orderPaymentLogs?.map((order) =>(
-                <tr className={classes.tdPadding} key={order.id}>
-                <td className='py-3'>{order.updatedAt.slice(0,10)}</td>
-                <td className="p-2">{order.changedFrom}</td>
-                <td className="p-2">{order.changedTo}</td>
-                <td className="p-2">{order.changedBy}</td>
+              paymentLogs?.map((log,index) =>(
+                <tr className={classes.tdPadding} key={log.id}>
+                <td className="p-2">{index+1}</td>
+                <td className='py-3'>{log.updatedAt.slice(0,10)}</td>
+                <td className="p-2">{log.paidAmount}</td>
+                <td className="p-2">{log.changedBy}</td>
                 
               </tr>
               ))
@@ -74,9 +152,8 @@ const PaymentStatus = (props) => {
             </tbody>
           </Table>
         </div>
-        <div className="onPrintDnone">
         </div>
-        </div>
+        <div className={classes.errorText}>{errors.notify}</div>
         </Modal.Body>       
        
       </Modal>

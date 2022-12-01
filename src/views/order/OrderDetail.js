@@ -22,7 +22,7 @@ const OrderDetail = () => {
   async function  featchOrder(){
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/orders/${orderId}`)
+   var response = await apiClient.get(`localadmin/orders/${orderId}`)
    if(response.status === 200){
     dispatch(orderAction.setOrderItems(response.data || []))
    }
@@ -46,7 +46,7 @@ const OrderDetail = () => {
       <div className="d-flex justify-content-between">
       <div>
         <div className="mt-3">
-          <span className="fw-bold">Order Id</span>: {orders.orderCode}
+          <span className="fw-bold">Order Code</span>: {orders.orderCode}
         </div>
         <div className="mt-3">
           <span className="fw-bold">Wholesaler</span>: {orders.wholeSaler?.fName+' '+orders.wholeSaler?.lName}
@@ -91,7 +91,6 @@ const OrderDetail = () => {
               <th>Quality</th>
               <th>Quantity(kg)</th>
               <th>Price per Kg(ETB)</th>
-              <th>Vat %</th>
               <th>Total Price(ETB)</th>
             </tr>
           </thead>
@@ -104,9 +103,8 @@ const OrderDetail = () => {
               <td className="p-3">{order.farmerProduct.productType?.title}</td>
               <td className="p-3">{order.farmerProduct.quality}</td>
               <td className="p-3">{order.quantity}</td>
-              <td className="p-3">{order.farmerProduct.pricePerKg}</td>
-              <td className="p-3 text-center">null</td>
-              <td className="p-3 text-center">{order?.price}</td>
+              <td className="p-3">{order.price}</td>
+              <td className="p-3 text-center">{order?.price*order.quantity}</td>
             </tr>
             ))
           }

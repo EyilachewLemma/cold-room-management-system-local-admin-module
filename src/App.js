@@ -13,7 +13,7 @@ function App() {
   const dispatch = useDispatch()
   const fetchUserData = async(token) =>{
     try{
-     const response = await axios.get('http://192.168.1.54:3000/localadmin/auth/my-account',{
+     const response = await axios.get('http://192.168.100.127:3000/localadmin/auth/my-account',{
       headers: {
         'Access-Control-Allow-Origin': '*',
         Accept: 'application/json',

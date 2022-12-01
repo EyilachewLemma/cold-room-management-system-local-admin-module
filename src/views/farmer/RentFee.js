@@ -16,6 +16,7 @@ const RetFee = () => {
 
   const dispatch = useDispatch()
   const rents = useSelector(state =>state.rent.rents)
+  // const user = useSelector(state =>state.user.data)
   const navigate = useNavigate()
   const {tr,faId} = useParams()
   const componentRef = useRef()
@@ -23,7 +24,7 @@ const RetFee = () => {
   async function  featchRents(){
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`admin/farmers/rents/${faId}`)
+   var response = await apiClient.get(`localadmin/farmers/rents/${faId}`)
    if(response.status === 200){
     dispatch(rentAction.setRents(response.data || []))
    }
@@ -90,6 +91,7 @@ const RetFee = () => {
       </div>
       
       <div className="mt-4">
+      {rents.farmerRents.length > 0 &&(
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
@@ -122,6 +124,12 @@ const RetFee = () => {
            
           </tbody>
         </Table>
+        )}
+        {
+          rents.farmerRents.length === 0 &&(
+            <div className="mt-5 text-center">No rent data is found</div>
+          )
+        }
       </div>
     </div>
   );

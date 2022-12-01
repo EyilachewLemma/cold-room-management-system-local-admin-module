@@ -16,6 +16,7 @@ import classes from "./WholeSalers.module.css";
 const WholeSalerList = () => {
   const dispatch = useDispatch()
   const wholesalers = useSelector(state =>state.wholesaler.wholesalers)
+  const user = useSelector(state =>state.user.data)
   const navigate = useNavigate()
   const componentRef = useRef()
   const searchBy = useRef()
@@ -23,7 +24,7 @@ const WholeSalerList = () => {
   const featchWholesalers = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`localadmin/wholesalers?search=${searchBy.current.value}`)
+   var response = await apiClient.get(`localadmin/wholesalers?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value}`)
    if(response.status === 200){
     dispatch(wholesalerAction.setWholesalers(response.data || []))
    }
@@ -88,9 +89,7 @@ const WholeSalerList = () => {
             <tr>
               <th>NO</th>
               <th>Wholesaler's Name</th>
-              <th>Region</th>
-              <th>Zone</th>
-              <th>Woreda</th>
+              <th>City</th>
               <th className="text-end">Phone Number</th>
               <th></th>
             </tr>
@@ -101,9 +100,7 @@ const WholeSalerList = () => {
               <tr className={classes.row} key={wholsaler.id}>
               <td className="p-3">{index+1}</td>
               <td className="p-3">{wholsaler.fName+' '+wholsaler.lName}</td>
-              <td className="p-3">{wholsaler.address.region}</td>
-              <td className="p-3">{wholsaler.address.zone}</td>
-              <td className="p-3">{wholsaler.address.woreda}</td>
+              <td className="p-3">{wholsaler.address?.location}</td>
               <td className="p-3 text-end">{wholsaler.phoneNumber}</td>
             <td className="p-3 text-end">
             <Button 
