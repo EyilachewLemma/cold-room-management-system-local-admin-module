@@ -12,6 +12,9 @@ const userSlice = createSlice({
         },
         setUser:(state,action) =>{
              state.data = action.payload
+        },
+        editUserName:(state,action)=>{
+            state.data = {...state.data,...action.payload}
         }
 
 

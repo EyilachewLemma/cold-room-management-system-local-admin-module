@@ -13,9 +13,12 @@ const productSlice = createSlice({
         setProductHistory:(state,action)=>{
             state.productHistries = action.payload
         },
+        // editFarmerProduct:(stae,action)=>{
+
+        // },
         deleteHistory:(state,action)=>{
-            const index  = state.productHistries.findIndex(product=>product.id === action.payload)
-            state.productHistries.splice(index,1)
+            const index  = state.productHistries.data_name.findIndex(product=>product.id === action.payload)
+            state.productHistries.data_name.splice(index,1)
         }
         
 

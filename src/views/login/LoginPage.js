@@ -48,7 +48,7 @@ const LoginPage = () =>{
         } 
         const fetchUserData = async(data) =>{
           try{
-           const response = await axios.get('http://192.168.100.127:3000/localadmin/auth/my-account',{
+           const response = await axios.get('http://coldroomapinew.merahitechnologies.com/localadmin/auth/my-account',{
             headers: {
               'Access-Control-Allow-Origin': '*',
               Accept: 'application/json',
@@ -77,17 +77,16 @@ const LoginPage = () =>{
             if(!errors.email && !errors.password){
                 dispatch(buttonAction.setBtnSpiner(true))
                 try{
-                    var response = await apiClient.post('admin/auth/login',cridentials)
+                    var response = await apiClient.post('admin/auth/local-login',cridentials)
                     if(response.status === 200 || 201){
                         saveUserData(response.data)
                         fetchUserData(response.data)
                     }
                 }
                 catch(err){
-                  console.log('err',err)
-                    // setErrors(prevErrors=>{
-                    //     return {...prevErrors,errNotify:err.response.data}
-                    // })
+                    setErrors(prevErrors=>{
+                        return {...prevErrors,errNotify:err.response.data}
+                    })
                 }
                 finally{
                     dispatch(buttonAction.setBtnSpiner(false))

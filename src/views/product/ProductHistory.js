@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button"
 import Pagination from 'react-bootstrap/Pagination';
 import ReactToPrint from "react-to-print";
 import EditFarmerProduct from "./EditFarmerProduct";
+import NotificationModal from "../../components/NotificationModal";
 import apiClient from "../../url/index";
 import {useNavigate } from "react-router-dom";
 import { useSelector,useDispatch } from "react-redux";
@@ -23,6 +24,7 @@ const ProductHistory = () => {
   const [showConfirm,setShowConfirm] = useState(false)
   const [currentPage,setCurrentPage] = useState(1)
   const [totalProduct,setTotalProduct] = useState(null)
+  const[modalData,setModalData] = useState({show:false,status:null,title:'',message:''})
   const [id,setId] = useState(null)
   const dispatch = useDispatch()
   const productsHistry = useSelector(state =>state.product.productHistries)
@@ -50,28 +52,39 @@ const ProductHistory = () => {
     sum=sum+product.totalProduct
   })
   setTotalProduct(sum)
-  console.log('sum==',sum)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[currentPage,products])
+  const searchByHandler = async()=>{
+    dispatch(isLoadingAction.setIsLoading(true))
+  try{
+   var response = await apiClient.get(`localadmin/products/history?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value.trim()}&date=${''}&page=${1}`)
+   if(response.status === 200){
+    dispatch(productAction.setProductHistory(response.data || []))
+   }
+  }
+  catch(err){}
+  finally {dispatch(isLoadingAction.setIsLoading(false))}
+  setCurrentPage(1)
+  }
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
-      featchProductHistory()
+      searchByHandler()
     }
   }
-  console.log('product--=-',products)
-  const searchHandler = () =>{
-    featchProductHistory()
+  const searchHandler = async() =>{
+    searchByHandler()
   }
   const filterByDateHandler = async(e) =>{
     dispatch(isLoadingAction.setIsLoading(true))
     try{
-     var response = await apiClient.get(`localadmin/products/history?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value.trim()}&date=${e.target.value}&page=${currentPage}`)
+     var response = await apiClient.get(`localadmin/products/history?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value.trim()}&date=${e.target.value}&page=${1}`)
      if(response.status === 200){
       dispatch(productAction.setProductHistory(response.data || []))
      }
     }
     catch(err){}
     finally {dispatch(isLoadingAction.setIsLoading(false))}
+    setCurrentPage(1)
   }
   const openDeleteConfirmModal = (id) =>{
         setId(id)
@@ -82,13 +95,21 @@ const ProductHistory = () => {
       }
   const deleteFarmerProduct = async () =>{
     try{
-      const response = await apiClient.delete(`localadmin/products/${id}`)
+       const response = await apiClient.delete(`localadmin/products/${id}`)
       if(response.status === 200){
         dispatch(productAction.deleteHistory(id))
+        setModalData({show:true,status:1,title:'Successful',message:'You deleted farmer product successfully'})
       }
     }
     catch(err){
-
+      console.log('errr=',err)
+      if(err.response.status === 403){
+        setModalData({show:true,status:0,title:'Faild',message:'impossible to delete sold  farmer product'})
+      }
+      else{
+        setModalData({show:true,status:0,title:'Faild',message:'faild to delet farmer product'})
+      }
+      
     }
   } 
   const openEditModal = (product) =>{
@@ -106,6 +127,9 @@ const ProductHistory = () => {
   }
   const setPrevPage = ()=>{
     setCurrentPage(prevValue=>prevValue - 1)
+  }
+  const handleModalClose =() =>{
+    setModalData({})
   }
   return (
     <Fragment>
@@ -166,14 +190,13 @@ const ProductHistory = () => {
               <th>Type</th>  
               <th>Quality</th>
               <th>Quantity(Kg)</th>  
-              <th>Price per Kg(ETB)</th>        
               <th>Added Date</th>            
                <th></th>
             </tr>
           </thead>
           <tbody>
           {
-            productsHistry.data_name.map((product) =>(
+            productsHistry.data_name?.map((product) =>(
               <tr className={classes.row} key={product.id}>
               <td className="py-4">{product.farmer.fName+' '+product.farmer.lName}</td>
               <td className="py-4">{product.warehousePosition}</td>
@@ -181,7 +204,6 @@ const ProductHistory = () => {
               <td className="py-4">{product.productType.title}</td>
               <td className="py-4">{product.quality}</td>
               <td className="py-4">{product.currentQuantity}</td>
-              <td className="py-4">{product.pricePerKg}</td>
               <td className="py-4">{product.createdAt.slice(0,10)}</td>
               <td>
               <div className="d-flex">
@@ -201,9 +223,9 @@ const ProductHistory = () => {
         <Pagination>
         <Pagination.Prev onClick={setPrevPage} disabled={currentPage === 1} active={currentPage> 1}/>
         <Pagination.Item onClick={()=>setPage(1)} >{1}</Pagination.Item>
-        <Pagination.Item disabled>{currentPage+'/'+(productsHistry.totalPages-1)}</Pagination.Item>
-        <Pagination.Item onClick={()=>setPage(+productsHistry.totalPages-1)}>{+productsHistry.totalPages-1}</Pagination.Item>
-        <Pagination.Next onClick={setNextPage} disabled={+productsHistry.totalPages-1 === currentPage} active={currentPage<productsHistry.totalPages-1}/>
+        <Pagination.Item disabled>{currentPage+'/'+(productsHistry.totalPages)}</Pagination.Item>
+        <Pagination.Item onClick={()=>setPage(+productsHistry.totalPages)}>{+productsHistry.totalPages}</Pagination.Item>
+        <Pagination.Next onClick={setNextPage} disabled={+productsHistry.totalPages === currentPage} active={currentPage<productsHistry.totalPages}/>
       </Pagination>
         </div>
       </div>
@@ -212,6 +234,7 @@ const ProductHistory = () => {
      
     <EditFarmerProduct show={show} product={product} onClose={closeEditModal} />
     <ConfirmModal show={showConfirm} onClose={closeConfirmModal} onDelete={deleteFarmerProduct} message='Are you sure to delete Farmer product ?' title='Delete Farmer Product' />
+    <NotificationModal modal={modalData} onClose={handleModalClose} />
     </Fragment>
   );
 };

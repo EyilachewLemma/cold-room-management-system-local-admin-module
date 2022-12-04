@@ -16,13 +16,14 @@ const Revenue = () => {
   const [currentPage,setCurrentPage] =useState(1)
   const dispatch = useDispatch()
   const revenues = useSelector(state =>state.revenue.revenues)
+  const user = useSelector(state=>state.user.data)
   const componentRef = useRef()
   const searchBy = useRef()
 
   const  featchRevenues = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`localadmin/revenues?search=${searchBy.current.value}&page=${currentPage}`)
+   var response = await apiClient.get(`localadmin/revenues?search=${searchBy.current.value}&page=${currentPage}&coldRoomId=${user.coldRoom.id}`)
    if(response.status === 200){
     dispatch(revenueAction.setRevenues(response.data || []))
    }
@@ -34,19 +35,30 @@ const Revenue = () => {
       featchRevenues()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[currentPage])
-
+const searchByHandler = async () =>{
+  dispatch(isLoadingAction.setIsLoading(true))
+  try{
+   var response = await apiClient.get(`localadmin/revenues?search=${searchBy.current.value}&page=${1}&coldRoomId=${user.coldRoom.id}`)
+   if(response.status === 200){
+    dispatch(revenueAction.setRevenues(response.data || []))
+   }
+  }
+  catch(err){}
+  finally {dispatch(isLoadingAction.setIsLoading(false))}
+  setCurrentPage(1)
+}
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
-      featchRevenues()
+      searchByHandler()
     }
   }
   const searchHandler = () =>{
-    featchRevenues()
+    searchByHandler()
   }
     const filterByDateHandler = async(e) =>{
       dispatch(isLoadingAction.setIsLoading(true))
       try{
-       var response = await apiClient.get(`localadmin/revenues?search=${searchBy.current.value}&coldRoomId=${''}&date=${e.target.value}`)
+       var response = await apiClient.get(`localadmin/revenues?search=${searchBy.current.value}&date=${e.target.value}&coldRoomId=${user.coldRoom.id}&page=${1}`)
        if(response.status === 200){
         dispatch(revenueAction.setRevenues(response.data || []))
        }
@@ -107,14 +119,14 @@ const Revenue = () => {
           <Table responsive="md">
             <thead className={classes.header}>
               <tr>
-                <th>Farmer Name</th>
-                <th>Product Name</th>
-                <th>Product SQU</th>
-                <th>Product Type</th>
-                <th>Added Date</th>
-                <th>Sold Date</th>
-                <th>Quantity(Kg)</th>
-                <th>Amount(ETB)</th>
+                <th className="small">Farmer Name</th>
+                <th className="small">Product Name</th>
+                <th className="small">Product SQU</th>
+                <th className="small">Product Type</th>
+                <th className="small">Added Date</th>
+                <th className="small">Sold Date</th>
+                <th className="small">Quantity(Kg)</th>
+                <th className="small">Amount(ETB)</th>
               </tr>
             </thead>
             <tbody>
@@ -123,7 +135,7 @@ const Revenue = () => {
                 <tr className={classes.row} key={index}>
                 <td className="p-3">{revenue.farmer.fName+' '+revenue.farmer.lName}</td>
                 <td className="p-3">{revenue.productName}</td>
-                <td className="p-3">{revenue.productSku}</td>
+                <td className="p-3">{revenue.warehousePosition}</td>
                 <td className="p-3">{revenue.productType}</td>
                 <td className="p-3">{revenue.addedDate?.slice(0,10)}</td>
                 <td className="p-3">{revenue.soldDate?.slice(0,10)}</td>

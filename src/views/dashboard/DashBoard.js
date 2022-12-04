@@ -3,18 +3,18 @@ import SalesOverviewChart from './SalesOverviewChart'
 import SalesPieChart from './TopSalesPieChart';
 import RecentOrders from './RecentOrders';
 import { isLoadingAction } from "../../store/slices/spinerSlice";
-import { useDispatch} from "react-redux";
+import { useDispatch,useSelector} from "react-redux";
 import apiClient from "../../url/index";
 import classes from './DashBoard.module.css'
 const DashBoard = () =>{
-    // const user = useSelector(state=>state.user.data)
+    const user = useSelector(state=>state.user.data)
     const [datas,setDatas] = useState({})
     const dispatch = useDispatch()
     const  featchDashboardData = async () =>{   
       
       dispatch(isLoadingAction.setIsLoading(true))
     try{
-     var response = await apiClient.get(`localadmin/dashboard/data`)
+     var response = await apiClient.get(`localadmin/dashboard/data?coldRoomId=${user.coldRoom.id}`)
      if(response.status === 200){
         setDatas(response.data)
 
@@ -41,7 +41,7 @@ const DashBoard = () =>{
                     <div className=" ms-3 fw-bold text-white">
                         <div>Total Products</div>
                     </div>
-                    <div className={`${classes.greenTxt} ms-3 fw-bold`}>{datas.totalProduct} Kg</div>
+                    <div className={`${classes.greenTxt} ms-3 fw-bold`}>{datas.totalProduct}</div>
                 </div>
             
         </div>

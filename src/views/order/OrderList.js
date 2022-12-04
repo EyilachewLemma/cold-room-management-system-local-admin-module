@@ -61,13 +61,17 @@ const handlPaymentStatus = (order) =>{
 const handlPaymentStatusModalClose = () =>{
   setIsPayMentStatusOpen(false)
 }
-const enterKeyHandler = (event) =>{
-  if(event.key === 'Enter' || !event.target.value){
-    featchOrders()
+const searchByhandler= async() =>{
+  dispatch(isLoadingAction.setIsLoading(true))
+  try{
+   var response = await apiClient.get(`localadmin/orders?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value}&status=${''}&date=${''}&page=${1}`)
+   if(response.status === 200){
+    dispatch(orderAction.setOrders(response.data || []))
+   }
   }
-}
-const searchHandler = () =>{
-  featchOrders()
+  catch(err){}
+  finally {dispatch(isLoadingAction.setIsLoading(false))}
+  setCurrentPage(1)
 }
   const filterOrderHandler = async(e)=>{
     dispatch(isLoadingAction.setIsLoading(false))
@@ -80,6 +84,14 @@ const searchHandler = () =>{
     catch(err){}
     finally {dispatch(isLoadingAction.setIsLoading(false))
     }
+}
+const enterKeyHandler = (event) =>{
+  if(event.key === 'Enter' || !event.target.value){
+    searchByhandler()
+  }
+}
+const searchHandler = async() =>{
+  searchByhandler()
   }
   const filterByDateHandler = async(e) =>{
     console.log('date=',e.target.value)

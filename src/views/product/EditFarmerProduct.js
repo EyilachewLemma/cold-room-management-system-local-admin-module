@@ -6,7 +6,8 @@ import SaveButton from '../../components/Button'
 import validateProduct from './validateProduct'
 import NotificationModal from '../../components/NotificationModal';
 import {buttonAction} from '../../store/slices/ButtonSpinerSlice'
-import { useDispatch } from 'react-redux';
+import {useDispatch } from "react-redux";
+// import { productAction } from '../../store/slices/ProductSlice';
 import apiClient from '../../url'
 import classes from './Products.module.css'
 
@@ -17,6 +18,7 @@ const EditFarmerProduct = ({show,product,onClose}) =>{
  const [errors,setErrors] = useState({productId:"",productTypeId:"",quality:"",quantity:"",warehousePosition:'',farmer:''})
  const[modalData,setModalData] = useState({show:false,status:null,title:'',message:''})
  const dispatch = useDispatch()
+ 
  const fetchProducts = async()=>{
  const response = await apiClient.get('localadmin/products/for-filter')
  if(response.status === 200){
@@ -79,16 +81,15 @@ const EditFarmerProduct = ({show,product,onClose}) =>{
           farmerId:product.farmerId,
           ...productInfo
   }
-  console.log('save is called 1')
   const err = validateProduct(productInfo)
 
   setErrors(err)
   if(Object.values(err).length === 0){
-    console.log('save is called 2')
     try{
       dispatch(buttonAction.setBtnSpiner(true))
       const response = await apiClient.put(`localadmin/products/${product.id}`,editedProduct)
       if(response.status === 200){
+        // dispatch(productAction.editFarmerProduct())
         onClose()
         setModalData({show:true,status:1,title:'Successful',message:'You edited product information successfully'})
       }

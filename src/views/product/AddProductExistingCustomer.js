@@ -5,9 +5,11 @@ import Table from 'react-bootstrap/Table'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import apiClient from '../../url'
 import classes from './Products.module.css'
 const AddProductExistingCustomer = () =>{
+  const user = useSelector(state=>state.user.data)
   const [farmers,setFarmer] =useState([])
   const [farmerId,setFarmerId] = useState(null)
     const searchBy = useRef()
@@ -15,7 +17,7 @@ const AddProductExistingCustomer = () =>{
 
     const searchHandler = async () =>{
       try{
-     const response = await apiClient.get(`localadmin/farmers/search?search=${searchBy.current.value}`)
+     const response = await apiClient.get(`localadmin/farmers/search?search=${searchBy.current.value}?coldRoomId=${user.coldRoom.id}`)
      if(response.status === 200){
       setFarmer(response.data)
      }

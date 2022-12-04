@@ -28,13 +28,10 @@ import OrderHistory from '../views/wholesaler/OrderHistory';
 
 import Revenue from '../views/revenue/Revenues'
 import Sales from '../views/sales/Sales'
-
+// import Account from '../views/account/Account';
 import LoginPage from '../views/login/LoginPage';
 import AskToForgot from '../views/login/AskToForgot';
 import ForgotPassword from '../views/login/ForgotPassword';
-
-// import Account from '../views/account/Account';
-
 
 import NotFound from '../views/NotFound';
 const RoutePage = () =>{

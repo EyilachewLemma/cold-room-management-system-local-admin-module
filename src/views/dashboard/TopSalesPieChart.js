@@ -5,13 +5,6 @@ import { useSelector } from 'react-redux';
 import addYear from './addYear';
 import apiClient from '../../url/index';
 import classes from './TopSalesPieChart.module.css'
-
-// const data = [
-//   { name: 'Tomato', value: 400 },
-//   { name: 'Onion', value: 300 },
-//   { name: 'Other', value: 300 },
-// ];
-
 const COLORS = ['#84DB3A','#FF7E00', '#FFFFFF',];
 
 const RADIAN = Math.PI / 180;
@@ -35,28 +28,25 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   const years = addYear() 
 
   const rearrangeResponse =(response) =>{
-    const topSeller = response.data.sales.map(element=>{
+    const topSeller = response.sales.map(element=>{
       return {
         name:element.farmerProduct.product?.name,
         value:element.soldQuantity
       }
     }) 
-    console.log('piechart data1=',topSeller)
     const bestSells = []
-    topSeller.forEach((el,index)=>{
+    topSeller.forEach((__,index)=>{
       bestSells[index] = topSeller[index]
     })
      if(topSeller.length > 2){
-    const topeSale1 = topSeller[0]?.value
-    const topeSale2 = topSeller[1]?.value
-    const sum = topeSale1 + topeSale2
-    const otherValue = response.data.total-sum
+    const sum = (topSeller[0]?.value*1) + (topSeller[1]?.value*1)
+    const otherValue = response.total*1 - sum
     if(otherValue > 0){
     const other = {
       name:'Other',
       value:otherValue
     }
-    bestSells.push(other)
+    bestSells[2] = other
   }    
     setSalesOverview(bestSells)
   }
@@ -67,10 +57,10 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   useEffect(()=>{
     const fetchCurrentYearOrders = async() =>{
       try{
-        const response  = await apiClient.get(`admin/dashboard/pie?year=${currentYear}&coldRoomId=${user.coldRoom.id}`)
+        const response  = await apiClient.get(`localadmin/dashboard/pie?year=${currentYear}&coldRoomId=${user.coldRoom.id}`)
         if(response.status === 200){
           console.log('piechart data=',response.data)
-          rearrangeResponse(response)
+          rearrangeResponse(response.data)
       }
       }
       catch(err){}
@@ -82,9 +72,9 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 const filterByYearHandler = async(e)=>{
   setSelectedValue(e.target.value)
   try{
-    const response  = await apiClient.get(`localadmin/dashboard/pie?year=${e.target.value}`)
+    const response  = await apiClient.get(`localadmin/dashboard/pie?year=${e.target.value}&coldRoomId=${user.coldRoom.id}`)
     if(response.status === 200){
-      rearrangeResponse(response)
+      rearrangeResponse(response.data)
     }
   }
   catch(err){}
@@ -129,15 +119,15 @@ const filterByYearHandler = async(e)=>{
           <div className='d-flex align-items-center ms-2'>
             <div className={`${classes.yellowBg} border`}></div>
             <span className='text-white ms-2'>{salesOverview[1]?.name}</span>
-          </div>
-          {salesOverview.length > 2 &&(
-            <div className='d-flex align-items-center ms-2'>
-            <div className={`${classes.whiteBg} border`}></div>
-            <span className='text-white ms-2'>{salesOverview[2]?.name}</span>
-          </div>
-          )}
+          </div>        
           
         </div>
+        {salesOverview.length > 2 &&(
+          <div className='d-flex align-items-center mt-1'>
+          <div className={`${classes.whiteBg} border`}></div>
+          <span className='text-white ms-2'>{salesOverview[2]?.name}</span>
+        </div>
+        )}
       </div>
     );
             }

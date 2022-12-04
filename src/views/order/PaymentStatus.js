@@ -98,9 +98,9 @@ const PaymentStatus = ({show,order,onClose}) => {
         <div className="fw-bold px-3 pt-3">Order Code: {order.orderCode}</div>
         <div className=" fw-bold mt-3 px-3">Payment Status : {paymentStatus}</div>
         </div>
-           <div className="d-flex ms-5 align-items-center">
+           <div className="d-flex ms-5 mt-2 align-items-center">
            <Form.Group className="mb-3 onPrintDnone" controlId="payment">
-        <Form.Label>Enter Amount</Form.Label>
+        <Form.Label>Enter Payment Amount</Form.Label>
         <Form.Control
          type="number"
          onChange={changeHandler}
@@ -131,7 +131,7 @@ const PaymentStatus = ({show,order,onClose}) => {
               <th>No</th>
                 <th>Paid Date</th>
                 <th>Paid Amount</th>
-                <th>Added By</th>
+                <th>Payment Added By</th>
                 
               </tr>
             </thead>

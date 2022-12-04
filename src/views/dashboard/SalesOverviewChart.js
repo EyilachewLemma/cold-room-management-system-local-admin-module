@@ -61,26 +61,8 @@ const SalesOverviewChart = () =>{
   const currentYear = new Date().getFullYear()*1
   const [selectedValue,setSelectedValue] = useState(currentYear)
   const years = addYear()
- 
-  const filterByYearHandler = async(e)=>{
-    setSelectedValue(e.target.value)
-    try{
-      const response  = await apiClient.get(`localadmin/dashboard/bar?year=${e.target.value}&coldRoomId=${user.coldRoom.id}`)
-      if(response.status === 200){
-        const datas = response.data.map(month=>{
-          return {month:month.month.slice(0,3),sales:month.count}
-        })
-        let results =salesOverviews.map(element1=>datas.find(element2=>element1.month===element2.month) || element1)
-
-        setSalesOverview(results)
-        console.log('result=',results)
-      }
-    }
-    catch(err){}
-  }
   useEffect(()=>{
-    const fetchCurrentYearOrders = async() =>{
-      
+    const fetchCurrentYearOrders = async() =>{      
       try{
         const response  = await apiClient.get(`localadmin/dashboard/bar?year=${currentYear}&coldRoomId=${user.coldRoom.id}`)
         if(response.status === 200){
@@ -90,7 +72,6 @@ const SalesOverviewChart = () =>{
           let results =salesOverviews.map(element1=>datas.find(element2=>element1.month===element2.month) || element1)
   
           setSalesOverview(results)
-          console.log('result=',results)
         }
       }
       catch(err){}
@@ -99,8 +80,22 @@ const SalesOverviewChart = () =>{
    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
-  console.log('salesOverviews=',salesOverviews)
-  console.log('years ---',years)
+  const filterByYearHandler = async(e)=>{
+    setSelectedValue(e.target.value)
+    try{
+      const response  = await apiClient.get(`localadmin/dashboard/bar?year=${e.target.value}&coldRoomId=${user.coldRoom.id}`)
+      if(response.status === 200){
+        const datas = response.data.map(month=>{
+          return {month:month.month.slice(0,3),sales:month.count}
+        })
+        let results =salesOverviews.map(element1=>datas.find(element2=>element1.month===element2.month) || {month:element1.month,sales:0})
+        setSalesOverview(results)
+      
+    }
+    
+    }
+    catch(err){}
+  }
     return (
       <>
       <div className='d-flex justify-content-between'>

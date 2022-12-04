@@ -56,14 +56,14 @@ const OrderHistory = () => {
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
-              <th>Order Code</th>
-              <th>Order Date</th>
-              <th>Cold room</th>
-              <th>Order Price(ETB)</th>
-              <th>Order Status</th>
-              <th>Payment Status</th>
-              <th>Paid Amount</th>
-              <th>Remaining Amount</th>
+              <th className="small">Order Code</th>
+              <th className="small">Order Date</th>
+              <th className="small">Cold room</th>
+              <th className="small">Order Price(ETB)</th>
+              <th className="small">Order Status</th>
+              <th className="small">Payment Status</th>
+              <th className="small">Paid Amount</th>
+              <th className="small">Remaining Amount</th>
             </tr>
           </thead>
           <tbody>

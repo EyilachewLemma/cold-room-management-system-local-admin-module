@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 // import profileImage from '../assetes/eyilachew.jpg'
 import ChangePassword from './ChangePassword';
+import EditName from './EditName';
 import { useNavigate } from 'react-router-dom';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import {useDispatch,useSelector} from 'react-redux'
@@ -15,8 +16,10 @@ import classes from './TheHeader.module.css'
 const TheHeader = () =>{
   const [show,setShow] = useState(false)
   const [showChangePassword,setShowChangePassword] = useState(false)
+  const [showEditName,setShowEditName] = useState(false)
+
   const dispatch = useDispatch()
-  const notifications = useSelector(state=>state.notification.notifications)
+  // const notifications = useSelector(state=>state.notification.notifications)
   const user = useSelector(state=>state.user.data)
   const navigate = useNavigate()
  
@@ -38,23 +41,27 @@ const TheHeader = () =>{
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
   const logoutHandler = () =>{
-    localStorage.removeItem('tokenc')
+    localStorage.removeItem('token')
     dispatch(userAction.setToken(null))
     dispatch(userAction.setIsAuthenticated(false))
     navigate('/login')
   }
   const accountHandler = () =>{
     // navigate('/account')
-    setShowChangePassword(true)
+    setShowEditName(true)
+    
   } 
+  const openPasswordChange = () =>{
+    setShowChangePassword(true)
+  }
   // const openNotification = () =>{
   //   setShow(true)
   // } 
   const handleClose = ()=>{
     setShow(false)
     setShowChangePassword(false)
+    setShowEditName(false)
   }
-  console.log('notification =',notifications)
   return <Fragment>
   <div className={classes.headerNav+' d-flex px-3 px-lg-5 py-2 align-items-center'}>
        <div>
@@ -78,15 +85,21 @@ const TheHeader = () =>{
         { 
           //  <img src={profileImage} alt={'profile_photo'} className={classes.profileImg+' img-fluid rounded-circle'} />
           }
-             <div className='text-white me-2'>
-               <div className='fw-bold ms-2 mt-2'>{user.fName+' '+user.lName}</div>
+             <div className="text-white me-2">
+               <div className="ms-2 mt-2 d-flex">
+               <span className="text-white fw-bold me-2">{user.fName?? ""}</span>
+               <span className="text-white fw-bold">{user.lName?? ""}</span>
+               </div>
                <div className='small text-start ms-3'>{user.role}</div>
              </div>
          </div>
         </Dropdown.Toggle>
         <Dropdown.Menu>
+        <Dropdown.Item>
+            <Button className={classes.profileBtn+' text-dark'} onClick={accountHandler}>Edit Your Name</Button>            
+            </Dropdown.Item>
           <Dropdown.Item>
-            <Button className={classes.profileBtn+' text-dark'} onClick={accountHandler}>Change Password</Button>            
+            <Button className={classes.profileBtn+' text-dark'} onClick={openPasswordChange}>Change Password</Button>            
             </Dropdown.Item>
           <Dropdown.Item>
           <Button className={classes.profileBtn+' text-dark'} onClick={logoutHandler}>Logout</Button>            
@@ -107,6 +120,7 @@ const TheHeader = () =>{
      </Offcanvas>
        </div>
        <ChangePassword show={showChangePassword} onClose={handleClose} />
+       <EditName show={showEditName} onClose={handleClose} />
        </Fragment>
 }
 export default TheHeader

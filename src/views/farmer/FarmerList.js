@@ -1,4 +1,4 @@
-import {Fragment, useEffect,useRef } from "react";
+import {Fragment, useEffect,useRef, useState } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import { farmerAction } from "../../store/slices/FarmerSlice";
 import { isLoadingAction } from "../../store/slices/spinerSlice";
@@ -15,9 +15,11 @@ import classes from "./Farmers.module.css";
 
 
 const FarmersList = () => {
-
+ const user = useSelector(state=>state.user.data)
   const dispatch = useDispatch()
   const farmers = useSelector(state =>state.farmer.farmers)
+  const [farmer,setFarmers] = useState({})
+  const [show,setShow] = useState(false)
   const navigate = useNavigate()
   const componentRef = useRef()
   const searchBy = useRef()
@@ -25,7 +27,7 @@ const FarmersList = () => {
   const featchFarmers = async() =>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{
-   var response = await apiClient.get(`localadmin/farmers?search=${searchBy.current.value}`)
+   var response = await apiClient.get(`localadmin/farmers?search=${searchBy.current.value}&coldRoomId=${user.coldRoom.id}`)
    if(response.status === 200){
     dispatch(farmerAction.setFarmers(response.data || []))
    }
@@ -42,9 +44,10 @@ const FarmersList = () => {
   const handlBalanceHistory = (tbc,id) =>{
     navigate(`/farmers/${id}/balance/${tbc}`)
   }
-//   const handlRentFee = (tr,id) =>{
-//     navigate(`/farmers/${id}/rent-fee/${tr}`)
-// }
+  const handlEditFarmer = (farmer) =>{
+    setFarmers(farmer)
+    setShow(true)
+}
 const handlProductHistory = (tp,id) =>{
     navigate(`/farmers/${id}/product-history/${tp}`)
 }
@@ -55,6 +58,9 @@ const enterKeyHandler = (event) =>{
 }
 const searchHandler = () =>{
   featchFarmers()
+}
+const closeEditModal = () =>{
+  setShow(false)
 }
   return (<Fragment>
     <div ref={componentRef}>
@@ -73,7 +79,7 @@ const searchHandler = () =>{
           </InputGroup.Text>
           <Form.Control
             className={classes.searchInput}
-            placeholder="search orders by wholsaler name"
+            placeholder="search orders by farmer name"
             ref={searchBy}
             aria-label="Username"
             aria-describedby="basic-addon1"
@@ -95,12 +101,16 @@ const searchHandler = () =>{
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
-              <th>NO</th>
-              <th>Farmer Name</th>
-              <th>Location</th>
-              <th>Product stock(Kg)</th>
-              <th>Product Rent Fee(ETB)</th>
-              <th>Balance(ETB)</th>
+              <th className="small">NO</th>
+              <th className="small">Farmer Name</th>
+              <th className="small">Phone Number</th>
+              <th className="small">Region</th>
+              <th className="small">Zone</th>
+              <th className="small">Woreda</th>
+              <th className="small">Kebele</th>
+              <th className="small">Product(Kg)</th>
+              <th className="small">Rent Fee(ETB)</th>
+              <th className="small">Balance(ETB)</th>
               <th className=""></th>
             </tr>
           </thead>
@@ -109,8 +119,12 @@ const searchHandler = () =>{
             farmers.map((farmer,index) =>(
               <tr className={classes.row} key={farmer.id}>
               <td className="p-3">{index+1}</td>
-              <td className="p-3">{farmer.fullName}</td>
-              <td className="p-3">{farmer.location}</td>
+              <td className="p-3">{farmer.fName+' '+farmer.lName}</td>
+              <td className="p-3">{farmer.phoneNumber}</td>
+              <td className="p-3">{farmer.address.region}</td>
+              <td className="p-3">{farmer.address.zone}</td>
+              <td className="p-3">{farmer.address.woreda}</td>
+              <td className="p-3">{farmer.address.kebele}</td>
               <td className="p-3 text-center">{farmer.totalProduct}</td>
               <td className="p-3 text-center">{farmer.totalRent}</td>
               <td className="p-3 text-center">{farmer.totalBalance}</td>
@@ -125,16 +139,15 @@ const searchHandler = () =>{
         variant="none"
         className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}
         onClick={()=>handlBalanceHistory(farmer.totalBalance,farmer.id)}>Balance History</Button>
-     {
-      // <Button
-      // variant="none"
-      // className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}
-      //  onClick={()=>handlRentFee(farmer.totalRent,farmer.id)}>Rent Fee</Button>
-     }
       <Button
         variant="none"
          className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}
-          onClick={()=>handlProductHistory(farmer.totalProduct,farmer.id)}>Product History</Button>
+          onClick={()=>handlProductHistory(farmer.totalProduct,farmer.id)}>Product History
+          </Button>
+            <Button
+            variant="none"
+            className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}
+             onClick={()=>handlEditFarmer(farmer)}>Edit Farmer</Button>
         </Dropdown.Menu>
     </Dropdown>
               </td>
@@ -148,10 +161,10 @@ const searchHandler = () =>{
       </div>
       )}
       {farmers.length === 0 &&(
-        <div className="mt-5 text-center">No data found</div>
+        <div className="mt-5 text-center">No farmers found</div>
       )}
       </div>
-      <EditFarmer farmer={{}} />
+      <EditFarmer show={show} farmer={farmer} onClose={closeEditModal}/>
       </Fragment>
   );
 };

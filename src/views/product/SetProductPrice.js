@@ -16,8 +16,7 @@ const ProductHistory = () => {
   const orders = useSelector(state =>state.order.orderItems)
   const navigate = useNavigate()
   const componentRef = useRef()
-  const {orderId} = useParams()
-  
+  const {orderId} = useParams() 
 
   async function  featchOrder(){
     dispatch(isLoadingAction.setIsLoading(true))
@@ -35,9 +34,6 @@ const ProductHistory = () => {
   featchOrder()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
-
-  console.log('order Items from',orders)
-
   return (
     <Fragment>
     <Button onClick={()=>navigate(-1)} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 

@@ -2,10 +2,16 @@ import {useState} from 'react'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button'
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { userAction } from '../../store/slices/UserSlice';
+import { useNavigate } from 'react-router-dom';
 import classes from './Login.module.css'
+import apiClient from '../../url';
 const ForgotPassword = () =>{
- const [cridentials, setCridentials] = useState({email:'',password:''})
- const [errors,setErrors] = useState({email:'',password:''})
+ const [cridentials, setCridentials] = useState({password:'',confirmpassword:''})
+ const [errors,setErrors] = useState({password:'',confirmpassword:''})
+ const dispatch = useDispatch()
+ const navigate = useNavigate()
      const changeHandler = (e) =>{
         const {name,value} = e.target
         setCridentials(prevValues=>{
@@ -13,49 +19,73 @@ const ForgotPassword = () =>{
         })
      }
      const validate = (values) =>{
-        const regexExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
       const errorValues ={}
-      if(!values.email){
-        errorValues.email = 'email is required'
-      }
-      if(!regexExp.test(values.email)){
-        errorValues.email = 'invalid email address'
-      }
       if(!values.password){
-        errorValues.password ='password is required'
+        errorValues.password = 'new password is required'
       }
-      if(values.length > 15){
-        errorValues.password = 'password must not be greater than 15 characters'
+      else if(values.length > 10){
+        errorValues.password = 'password must not be greater than 10 characters'
       }
+      if(values.length < 6){
+        errorValues.password = 'password must not be lessthan 6 characters'
+      }
+      if(!values.confirmpassword){
+        errorValues.confirmpassword ='please confirm new password'
+      }
+      else if(values.password !== values.confirmpassword){
+        errorValues.confirmpassword = 'password is not match'
+      }
+      
       return errorValues
      }
-    const loginHandler =() =>{
-        setErrors(validate(cridentials))
-    }
+     const fetchUserData = async(data) =>{
+      try{
+       const response = await apiClient.get('localadmin/auth/my-account')
+       if(response.status === 200){
+        dispatch(userAction.setUser(response.data))
+        navigate('/')
+     }
+      }
+      catch(err){
+        console.log('error')
+      }
+     }
+    const saveNewPassword =async() =>{
+      const error = validate(cridentials)
+        setErrors(error)
+        if(Object.values(error).length === 0){
+          try{
+            const response = await apiClient.post('admin/auth/reset-password',{newPassword:cridentials.password})
+            if(response.status === 200 || 201){
+              fetchUserData()
+            }
+          }
+          catch(err){}
+        }
+      }
     return <div className={`${classes.wraper} p-5`}>
 <Form>
 <Form.Group className="mb-4" controlId="loginemail">
-  <Form.Label className='fw-bold'>Email address</Form.Label>
+  <Form.Label className='fw-bold'>New Password</Form.Label>
   <Form.Control 
-  type="email" 
-  placeholder="name@example.com"
-  name='email'
+  type="password" 
+  name='password'
   className={errors.email?classes.errorBorder:''}
   onChange={changeHandler}
    />
    <span className={classes.errorText}>{errors.email}</span> 
 </Form.Group>
 <Form.Group className="mb-4" controlId="password">
-  <Form.Label className='fw-bold'>Password</Form.Label>
+  <Form.Label className='fw-bold'>Confirm Password</Form.Label>
   <Form.Control 
   type="password"
-  name='password'
-  className={errors.password?classes.errorBorder:''}
+  name='confirmpassword'
+  className={errors.confirmpassword?classes.errorBorder:''}
   onChange={changeHandler}
    />
-   <span className={classes.errorText}>{errors.password}</span> 
+   <span className={classes.errorText}>{errors.confirmpassword}</span> 
 </Form.Group>
-<Button className={`${classes.btn} w-100`} variant='none' onClick={loginHandler}>Login</Button>
+<Button className={`${classes.btn} w-100`} variant='none' onClick={saveNewPassword}>Save Password</Button>
 </Form>
 <div className='d-flex justify-content-end mt-4'>
 <Link to={'/login'}>Login</Link>

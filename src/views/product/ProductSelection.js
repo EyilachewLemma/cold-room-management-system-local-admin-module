@@ -16,6 +16,7 @@ const ProductSelection = (props) =>{
  const[modalData,setModalData] = useState({show:false,status:null,title:'',message:''})
  const dispatch = useDispatch()
  const {farmerId} =  props
+
  const fetchProducts = async()=>{
  const response = await apiClient.get('localadmin/products/for-filter')
  if(response.status === 200){
@@ -111,6 +112,10 @@ const ProductSelection = (props) =>{
         response = await apiClient.post('localadmin/products',productData)
         if(response.status === 200){
           setModalData({show:true,status:1,title:'Successful',message:'You added a product successfully'})
+          setProductInfo(prevValue=>{
+            return {...prevValue,quantity:'',warehousePosition:''}
+          })
+          props.setFarmer({})
         }
         }
         catch(err){

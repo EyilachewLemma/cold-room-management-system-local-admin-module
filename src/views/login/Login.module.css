@@ -23,3 +23,12 @@
 .errorText{
     color: red!important;
 }
+.boxShadow:focus{
+    box-shadow: none!important;
+    border: none!important;
+}
+@media(max-width:992px){
+    .wraper{
+        min-width: 50%;
+    }
+}

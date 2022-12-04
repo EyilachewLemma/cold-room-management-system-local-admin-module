@@ -35,16 +35,25 @@ const Sales = () => {
   featchSaleses()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[currentPage])
-
-  console.log('saleses from',saleses)
+ const searchByHandler = async() =>{
+  dispatch(isLoadingAction.setIsLoading(true))
+  try{
+   var response = await apiClient.get(`localadmin/sales?search=${searchBy.current.value}&coldRoomId=${user.coldRoom.id}&date=${''}&page=${1}`)
+   if(response.status === 200){
+    dispatch(salesAction.setSales(response.data || []))
+   }
+  }
+  catch(err){}
+  finally {dispatch(isLoadingAction.setIsLoading(false))}
+  setCurrentPage(1)
+ }
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
-      featchSaleses()
-      console.log('event value',event.target.value)
+      searchByHandler()
     }
   }
   const searchHandler = () =>{
-    featchSaleses()
+    searchByHandler()
   }
     const filterByDateHandler = async(e) =>{
       dispatch(isLoadingAction.setIsLoading(true))
@@ -56,7 +65,6 @@ const Sales = () => {
   }
   catch(err){}
   finally {dispatch(isLoadingAction.setIsLoading(false))}
-      console.log('date=',e.target.value)
     }
     const setPage = (nomber) =>{
       setCurrentPage(nomber)
@@ -111,13 +119,14 @@ const Sales = () => {
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
-              <th>Order Code</th>
-              <th>Wholesaler Name</th>
-              <th>Order Date</th>
-              <th>Total Price</th>
-              <th>Payment Status</th>
-              <th>Paid Amount(ETB)</th>
-              <th>Remaining Amount(ETB)</th>
+              <th className="small">Order Code</th>
+              <th className="small">Wholesaler Name</th>
+              <th className="small">Order Date</th>
+              <th className="small">Order Status</th>
+              <th className="small">Total Price</th>             
+              <th className="small">Payment Status</th>
+              <th className="small">Paid Amount(ETB)</th>
+              <th className="small">Remaining Amount(ETB)</th>
             </tr>
           </thead>
           <tbody>
@@ -127,7 +136,8 @@ const Sales = () => {
               <td className="px-2 py-3 text-center">{sales.orderCode}</td>
               <td className="px-2 py-3 text-center">{sales.wholeSaler?.fName+' '+sales.wholeSaler?.lName}</td>
               <td className="px-2 py-3 text-center">{sales.createdAt.slice(0,10)}</td>
-              <td className="px-2 py-3 text-center">{sales.totalPrice}</td>
+              <td className="px-2 py-3 text-center">{sales.orderStatus}</td>
+              <td className="px-2 py-3 text-center">{sales.totalPrice}</td>              
               <td className="px-2 py-3 text-center">{sales.paymentStatus}</td>
               <td className="px-2 py-3 text-center">{sales.paidAmount}</td>
               <td className="px-2 py-3 text-center">{sales.totalPrice-sales.paidAmount}</td>

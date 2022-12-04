@@ -58,7 +58,7 @@ const ProductDetail = () => {
     if(!price){
        errorValu = 'please enter current price'
       }
-      else if(price.length > 3){
+      else if(price.length > 4){
         errorValu = 'price vale must be lessthan 4 digits'
       }
     setError(errorValu)
@@ -91,6 +91,7 @@ const ProductDetail = () => {
 }
   const handleClose = () =>{
     setShow(false)
+    setError('')
   }
  console.log('producttoedited',producttoedited)
   return (

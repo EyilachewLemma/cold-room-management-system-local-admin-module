@@ -51,8 +51,9 @@ else if(data.confirmPassword !== data.newPassword){
 return err
 }
     const saveHandler = async() =>{
-       const err = setErrors(validate(values))
-        if(!err?.oldPassword && !err?.newPassword && !err?.confirmPassword){
+       const err = validate(values)
+        setErrors(err)
+        if(Object.values(err)?.length === 0){
             try{
                 dispatch(buttonAction.setBtnSpiner(true));
                 const response = await apiClient.put(`admin/auth/change-password/${user.id}`,values)

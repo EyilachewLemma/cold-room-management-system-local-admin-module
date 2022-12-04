@@ -11,21 +11,29 @@ import { useDispatch } from 'react-redux';
 import classes from './Farmers.module.css'
 
 
-const EditFarmer = (props) => {
-    const [farmer,setFarmer] = useState({fName:'',lName:'',region:'',zone:'',woreda:'',kebele:'',phoneNumber:''})
+const EditFarmer = ({show,farmer,onClose}) => {
+    const [farmerInfo,setFarmerInfo] = useState({fName:'',lName:'',region:'',zone:'',woreda:'',kebele:'',phoneNumber:'',addressId:null,})
     const [errors,setErrors] = useState({fName:'',lName:'',region:'',zone:'',woreda:'',kebele:'',phoneNumber:''})
     const dispatch = useDispatch()
-    const {id,fName,lName,phoneNumber,email,role} = props.farmer
-    console.log('employees to be edited=',props.employee)
+    console.log('farmer to be edited=',farmer)
  useEffect(()=>{
-  
-  setFarmer({fName,lName,phoneNumber,email,role})
+  const oldFarmerInfo={
+    fName:farmer.fName,
+    lName:farmer.lName,
+    addressId:farmer.address?.id,
+    region:farmer.address?.region,
+    zone:farmer.address?.zone,
+    woreda:farmer.address?.woreda,
+    kebele:farmer.address?.kebele,
+    phoneNumber:farmer?.phoneNumber
+  }
+  setFarmerInfo(oldFarmerInfo)
  // eslint-disable-next-line react-hooks/exhaustive-deps
- },[id])
+ },[farmer])
  
     const changeHandler = (e) =>{
        const {name,value} = e.target
-       setFarmer(previousValues=>{
+       setFarmerInfo(previousValues=>{
         return {...previousValues,[name]:value}
        })
        if(e.target.value){
@@ -35,14 +43,30 @@ const EditFarmer = (props) => {
        }
     }
     const editHandler = async() =>{
-      const err =validateFarmer(farmer)
+      const err =validateFarmer(farmerInfo)
       setErrors(err)
       if(Object.values(err)?.length === 0){
       dispatch(buttonAction.setBtnSpiner(true))
       try{
-      const response = await apiClient.put(`admin/employees/${id}`,farmer)
+      const response = await apiClient.put(`localadmin/farmers/${farmer.id}`,farmerInfo)
       if(response.status === 200){
-         dispatch(farmerAction.editEmployee(response.data))
+        const newFarme = {
+              id:farmer.id,
+              fName:farmerInfo.fName,
+              lName:farmerInfo.lName,
+              phoneNumber:farmerInfo.phoneNumber,
+              totalProduct:farmer.totalProduct,
+              totalBalance:farmer.totalBalance,
+              totalRent:farmer.totalRent,
+              address:{
+                id:farmer.address.id,
+                region:farmerInfo.region,
+                zone:farmerInfo.zone,
+                woreda:farmerInfo.woreda,
+                kebele:farmerInfo.kebele,
+              }
+        }
+         dispatch(farmerAction.editFarmer(newFarme))
          handleClose()
       }
     }
@@ -55,21 +79,21 @@ const EditFarmer = (props) => {
     }
   }
   const handleClose = () => {
-    props.onClose()
-    setFarmer({})
+    onClose()
+    setFarmerInfo({})
       setErrors({})
   }
 
   return (
     <>
       <Modal
-        show={props.show}
+        show={show}
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{props.title}</Modal.Title>
+          <Modal.Title>Edit Farmer Information</Modal.Title>
         </Modal.Header>
         <Modal.Body>
         <Form className='px-3'>
@@ -79,7 +103,7 @@ const EditFarmer = (props) => {
           type="text"
           name="fName"
           onChange={changeHandler}
-          value={farmer.fName || ''}
+          value={farmerInfo.fName || ''}
           className={errors.fName?classes.errorBorder:''}
            />
            <span className={classes.errorText}>{errors.fName}</span> 
@@ -90,7 +114,7 @@ const EditFarmer = (props) => {
            type="text"
            name="lName"
           onChange={changeHandler}
-          value={farmer.lName || ''}
+          value={farmerInfo.lName || ''}
           className={errors.lName?classes.errorBorder:''}
             />
             <span className={classes.errorText}>{errors.lName}</span> 
@@ -101,22 +125,55 @@ const EditFarmer = (props) => {
          type="number"
          name="phoneNumber"
           onChange={changeHandler}
-          value={farmer.phoneNumber || ''}
+          value={farmerInfo.phoneNumber || ''}
           className={errors.phoneNumber?classes.errorBorder:''}
           />
           <span className={classes.errorText}>{errors.phoneNumber}</span> 
       </Form.Group>
-      <Form.Group className="mb-3" controlId="emailAddress">
-      <Form.Label>Email Address</Form.Label>
+      <Form.Group className="mb-3" controlId="Region">
+      <Form.Label>Region</Form.Label>
       <Form.Control
-       type="email"
-       name="email"
+       type="text"
+       name="region"
        onChange={changeHandler}
-       value={farmer.email || ''}
-       className={errors.email?classes.errorBorder:''}
+       value={farmerInfo.region || ''}
+       className={errors.region?classes.errorBorder:''}
         />
-        <span className={classes.errorText}>{errors.email}</span> 
+        <span className={classes.errorText}>{errors.region}</span> 
     </Form.Group>
+    <Form.Group className="mb-3" controlId="zone">
+    <Form.Label>Zone</Form.Label>
+    <Form.Control
+     type="text"
+     name="zone"
+     onChange={changeHandler}
+     value={farmerInfo.zone || ''}
+     className={errors.zone?classes.errorBorder:''}
+      />
+      <span className={classes.errorText}>{errors.zone}</span> 
+  </Form.Group>
+  <Form.Group className="mb-3" controlId="Woreda">
+  <Form.Label>Woreda</Form.Label>
+  <Form.Control
+   type="text"
+   name="woreda"
+   onChange={changeHandler}
+   value={farmerInfo.woreda || ''}
+   className={errors.woreda?classes.errorBorder:''}
+    />
+    <span className={classes.errorText}>{errors.woreda}</span> 
+</Form.Group>
+<Form.Group className="mb-3" controlId="Kebele">
+<Form.Label>Kebele</Form.Label>
+<Form.Control
+ type="text"
+ name="kebele"
+ onChange={changeHandler}
+ value={farmerInfo.kebele || ''}
+ className={errors.kebele?classes.errorBorder:''}
+  />
+  <span className={classes.errorText}>{errors.kebele}</span> 
+</Form.Group>
       </Form>
   
         </Modal.Body>

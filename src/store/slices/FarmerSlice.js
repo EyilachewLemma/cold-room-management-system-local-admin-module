@@ -7,6 +7,10 @@ const farmerSlice = createSlice({
         setFarmers(state,action){
             state.farmers = action.payload
         },
+        editFarmer:(state,action)=>{
+            const index = state.farmers.findIndex(farmer=>farmer.id*1===action.payload.id*1)
+            state.farmers[index] = action.payload
+        }
 
 
     }

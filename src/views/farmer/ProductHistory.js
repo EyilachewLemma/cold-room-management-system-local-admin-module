@@ -87,12 +87,12 @@ console.log('pppp---',products)
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
-              <th>Product-SKU</th>
-              <th>Product Name</th>
-              <th>Product Type</th>
-              <th>Added Date</th>
-              <th>Sold Stock(Kg)</th>
-              <th>Current Stock(Kg)</th>
+              <th className="small">Product-SKU</th>
+              <th className="small">Product Name</th>
+              <th className="small">Product Type</th>
+              <th className="small">Added Date</th>
+              <th className="small">Sold Stock(Kg)</th>
+              <th className="small">Current Stock(Kg)</th>
             </tr>
           </thead>
           <tbody>
