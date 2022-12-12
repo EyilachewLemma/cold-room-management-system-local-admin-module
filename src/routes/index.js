@@ -63,13 +63,13 @@ const RoutePage = () =>{
   <Route index element={<WholeSalerList />} />
   <Route path=':whId/order-history' element={<OrderHistory />} />
   </Route>
-  <Route path='/revenue' element={<Revenue />} />
+  <Route path='revenue' element={<Revenue />} />
   <Route path='sales' element={<Sales />} />
    </Route> 
    <Route path='/login' element={<LoginPage />} />
      <Route path='/forgot-password' element={<ForgotPassword />} />     
-     <Route path="*" element={<NotFound />}/> 
-     <Route path='/forgot' element={<AskToForgot />} />   
+     <Route path='/forgot' element={<AskToForgot />} /> 
+     <Route path="*" element={<NotFound />}/>   
   </Routes>
   
   

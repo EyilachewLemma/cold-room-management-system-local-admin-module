@@ -35,7 +35,7 @@ const WholeSalerList = () => {
   useEffect( ()=>{   
   featchWholesalers()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[user])
 
 
   const orderHistoryHandler = (whId) =>{

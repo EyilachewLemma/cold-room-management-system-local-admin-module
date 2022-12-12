@@ -29,7 +29,6 @@ const ProductHistory = () => {
   const dispatch = useDispatch()
   const productsHistry = useSelector(state =>state.product.productHistries)
   const user = useSelector(state=>state.user.data)
-  const products = useSelector(state=>state.product.products)
   const navigate = useNavigate()
   const componentRef = useRef()  
   const searchBy = useRef()
@@ -40,6 +39,11 @@ const ProductHistory = () => {
    var response = await apiClient.get(`localadmin/products/history?coldRoomId=${user.coldRoom.id}&search=${searchBy.current.value.trim()}&date=${''}&page=${currentPage}`)
    if(response.status === 200){
     dispatch(productAction.setProductHistory(response.data || []))
+    let sum=0
+  response.data.data_name?.forEach(product=>{
+    sum=sum+product.currentQuantity
+  })
+  setTotalProduct(sum)
    }
   }
   catch(err){}
@@ -47,13 +51,9 @@ const ProductHistory = () => {
 }
   useEffect( ()=>{    
   featchProductHistory()
-  let sum=0
-  products.forEach(product=>{
-    sum=sum+product.totalProduct
-  })
-  setTotalProduct(sum)
+  
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[currentPage,products])
+  },[currentPage,user])
   const searchByHandler = async()=>{
     dispatch(isLoadingAction.setIsLoading(true))
   try{

@@ -17,9 +17,14 @@ const AddProductExistingCustomer = () =>{
 
     const searchHandler = async () =>{
       try{
-     const response = await apiClient.get(`localadmin/farmers/search?search=${searchBy.current.value}?coldRoomId=${user.coldRoom.id}`)
+     const response = await apiClient.get(`localadmin/farmers/search?search=${searchBy.current.value}&coldRoomId=${user.coldRoom.id}`)
      if(response.status === 200){
+      if(response.data?.length>0){
       setFarmer(response.data)
+      }
+      else{
+        setFarmer([])
+      }
      }
       }
       catch(err){}

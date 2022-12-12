@@ -8,7 +8,10 @@ const validateProduct = (values) =>{
         error.productTypeId = 'please select product type'
     }
     if(!values?.quality){
-        error.quality = 'please select product quality'
+        error.quality = 'please enter product quality'
+    }
+    else if(values.quality?.length > 14){
+        error.quality = 'product quality must be lessthan 15 letters'
     }
     if(!values?.quantity){
         error.quantity = 'product quantity is required'

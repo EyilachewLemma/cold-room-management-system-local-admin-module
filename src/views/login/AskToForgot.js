@@ -31,6 +31,10 @@ const AskToForgot = () =>{
       }
       return err
      }
+     const toggleFormHandler = () =>{
+      setToggleForm(true)
+      setNotification({})
+     }
     const sendEmailHandler = async() =>{
        const err = validate(email)
         setError(err)
@@ -67,7 +71,7 @@ const AskToForgot = () =>{
                localStorage.removeItem('token')
                apiClient.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
                localStorage.setItem("token", response.data.token);
-               navigate('/forgot-password')
+               navigate(`/forgot-password?email=${email}`)
             }
          }
          catch(err){
@@ -99,7 +103,7 @@ const AskToForgot = () =>{
 {
    !toggleForm && (
       <div>
-      <Button onClick={()=>setToggleForm(true)} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 
+      <Button onClick={toggleFormHandler} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 
 <Form.Group className="mb-4 mt-3" controlId="loginemail">
   <Form.Label className='fw-bold'>Enter Confirmation Code</Form.Label>
   <Form.Control 
@@ -117,7 +121,7 @@ const AskToForgot = () =>{
 </Form>
 <div className={`${notification.status==='success'?"text-success":classes.errorText} my-2 text-center `}>{notification.message}</div>
 <div className='d-flex justify-content-end mt-4'>
-<Link to={'/login'}>Login</Link>
+<Link to={`/login`}>Login</Link>
 </div>
 </div>
 }

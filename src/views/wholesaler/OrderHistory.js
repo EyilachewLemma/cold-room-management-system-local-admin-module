@@ -58,7 +58,6 @@ const OrderHistory = () => {
             <tr>
               <th className="small">Order Code</th>
               <th className="small">Order Date</th>
-              <th className="small">Cold room</th>
               <th className="small">Order Price(ETB)</th>
               <th className="small">Order Status</th>
               <th className="small">Payment Status</th>
@@ -72,7 +71,6 @@ const OrderHistory = () => {
               <tr className={classes.row} key={index}>
               <td className="p-3">{order.orderCode}</td>
               <td className="p-3">{order.createdAt.slice(0,10)}</td>
-              <td className="p-3">{order.coldRoom?.name}</td>
               <td className="p-3 text-center">{order.totalPrice}</td>
               <td className="p-3">{order.orderStatus}</td>
               <td className="p-3">{order.paymentStatus}</td>

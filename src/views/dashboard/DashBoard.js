@@ -26,8 +26,7 @@ const DashBoard = () =>{
   useEffect(()=>{
     featchDashboardData()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
-  console.log('statistics data=',datas)
+  },[user])
     return (<Fragment>
         <div className="d-flex justify-content-between w-100">
         <div className={`${classes.blackBg} border shadow-sm px-3 pt-1 pb-2`}>

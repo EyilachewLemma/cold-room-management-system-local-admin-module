@@ -43,7 +43,7 @@ const OrderList = () => {
    
   featchOrders()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[currentPage])
+  },[currentPage,user])
   const handlOrderItem = (orderId) =>{
     navigate(`/orders/${orderId}`)
   }

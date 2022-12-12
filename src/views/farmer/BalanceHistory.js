@@ -155,7 +155,7 @@ const BalanceHistory = () => {
               <th className="small">Price(ETB)</th>
               <th className="small">Rent Price</th>
               <th className="small">Rent Fee</th>
-              <th className="small">Balance(ETB)</th>
+              <th className="small">Total Balance(ETB)</th>
               <th className="small">Net Balance(ETB)</th>
               <th className="small">Withdrawal State</th>
             </tr>

@@ -22,15 +22,21 @@ const PaymentStatus = ({show,order,onClose}) => {
   useEffect(()=>{
     setPaymentLog(order.orderPaymentLogs)
     setPaymentStatus(order.paymentStatus)
-  },[order])
-  console.log('payment log=',order)
+  },[order,onClose])
   const changeHandler = async(e)=>{
     setAmount(e.target.value)  
+    if(e.target.value){
+      setErrors({})
+    }
   }
+
   const savePayment = async()=>{
     let err = ''
     if(!amount){
       err= 'please enter payment amount'
+    }
+    else if(amount < 1){
+      err = 'payment amount must be greater than zero'
     }
     setErrors(prevErr=>{
       return {...prevErr,amount:err}
@@ -49,15 +55,13 @@ const PaymentStatus = ({show,order,onClose}) => {
         setPaymentLog(prevValue=>{
           return [...prevValue,response.data.paymentLog]
         })
-        setPaymentStatus(response.data.paymentStatus)
         setPaymentStatus(response.data?.paymentStatus)
-        dispatch(orderAction.setPaymentStatus({status:response.data.changedTo,id:order.id}))
+        dispatch(orderAction.setPaymentStatus({status:response.data.paymentStatus,id:order.id}))
       }
       
     }
     catch(err){
-      if(response.status === 403){
-        console.log('err==',err)
+      if(err.response.status === 403){
         setErrors(preErr=>{
           return {...preErr,notify:err.response.data}
           })
@@ -78,6 +82,7 @@ const PaymentStatus = ({show,order,onClose}) => {
   
   const closeModalHandler = () => {
     onClose();
+    setErrors({})
   };
   return (
     <>
@@ -98,20 +103,24 @@ const PaymentStatus = ({show,order,onClose}) => {
         <div className="fw-bold px-3 pt-3">Order Code: {order.orderCode}</div>
         <div className=" fw-bold mt-3 px-3">Payment Status : {paymentStatus}</div>
         </div>
-           <div className="d-flex ms-5 mt-2 align-items-center">
-           <Form.Group className="mb-3 onPrintDnone" controlId="payment">
-        <Form.Label>Enter Payment Amount</Form.Label>
-        <Form.Control
-         type="number"
-         onChange={changeHandler}
-         className={errors.amount?classes.errorBorder:''}
-         />
-         <span className={classes.errorText}>{errors.amount}</span> 
-      </Form.Group>
-      <div className="ms-5 mt-2 onPrintDnone">
-      <SaveButton title='Save' onSave={savePayment} />
-      </div>
-           </div>
+          {
+            paymentStatus !== "paid" &&(
+              <div className="d-flex ms-5 mt-2 align-items-center">
+              <Form.Group className="mb-3 onPrintDnone" controlId="payment">
+           <Form.Label>Enter Payment Amount</Form.Label>
+           <Form.Control
+            type="number"
+            min="1"
+            onChange={changeHandler}
+            className={errors.amount?classes.errorBorder:''}
+            />
+            <span className={classes.errorText}>{errors.amount}</span> 
+         </Form.Group>
+         <div className="ms-5 mt-2 onPrintDnone">
+         <SaveButton title='Save' onSave={savePayment} />
+         </div>
+              </div>
+            )}
         </div>
           <div className="d-flex align-items-center px-3 pt-2">              
             <div className="ms-auto">
@@ -153,7 +162,7 @@ const PaymentStatus = ({show,order,onClose}) => {
           </Table>
         </div>
         </div>
-        <div className={classes.errorText}>{errors.notify}</div>
+        <div className={`${classes.errorText} text-center`}>{errors.notify}</div>
         </Modal.Body>       
        
       </Modal>

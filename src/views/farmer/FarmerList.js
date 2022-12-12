@@ -39,7 +39,7 @@ const FarmersList = () => {
    
   featchFarmers()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[user])
 
   const handlBalanceHistory = (tbc,id) =>{
     navigate(`/farmers/${id}/balance/${tbc}`)

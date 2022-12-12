@@ -79,7 +79,7 @@ const SalesOverviewChart = () =>{
     fetchCurrentYearOrders()
    
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[user])
   const filterByYearHandler = async(e)=>{
     setSelectedValue(e.target.value)
     try{

@@ -36,7 +36,6 @@ const ProductHistory = () => {
   featchProductHistory()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
-console.log('pppp---',products)
   return (
     <Fragment>
     <Button onClick={()=>navigate(-1)} variant='none' className={`${classes.boxShadow} fs-3 fw-bold`}><i className="fas fa-arrow-left"></i></Button> 
@@ -84,6 +83,8 @@ console.log('pppp---',products)
       </div>
       
       <div className="mt-4">
+      {
+        products?.length > 0 &&(
         <Table responsive="md">
           <thead className={classes.header}>
             <tr>
@@ -112,6 +113,12 @@ console.log('pppp---',products)
            
           </tbody>
         </Table>
+        )}
+        {
+          products?.length === 0 && (
+            <div className="mt-5 text-center">No product Historys found for the selected farmer</div>
+          )
+        }
       </div>
       </div>
     </Fragment>

@@ -1,17 +1,18 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import SaveButton from './Button';
 import CancelButton from './CancelButton';
 import { buttonAction } from "../store/slices/ButtonSpinerSlice";
 import {userAction} from '../store/slices/UserSlice'
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import apiClient from '../url';
 import classes from './EditName.module.css'
 
  const EditName = (props) => {
     const [values,setValues] =useState({fName:'',lName:''})
     const [errors,setErrors] = useState({fName:'',lName:''})
+    const user = useSelector(state=>state.user.data)
     const dispatch = useDispatch()
     const changeHandler = (e) =>{
         const {name,value} =e.target
@@ -24,6 +25,10 @@ import classes from './EditName.module.css'
             })
         }
     }
+    useEffect(()=>{
+      setValues({fName:user.fName,lName:user.lName})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[props])
     const validate = (data) =>{
         const err = {}
         if(!data.fName?.trim()){
@@ -45,9 +50,10 @@ return err
         if(!errors.fName && !errors.lName){
             try{
                 dispatch(buttonAction.setBtnSpiner(true));
-                const response = await apiClient.put('localadmin/editAdminName',values)
+                const response = await apiClient.post(`admin/auth/change-profile/${user.id}`,values)
                 if(response.status === 200 || 201){
                     dispatch(userAction.editUserName({fName:values.fName,lName:values.lName}))
+                    closeHandler()
                 }
             }
             catch(err){

@@ -34,10 +34,12 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
         value:element.soldQuantity
       }
     }) 
-    const bestSells = []
-    topSeller.forEach((__,index)=>{
-      bestSells[index] = topSeller[index]
-    })
+    const bestSells = []    
+    for(let i = 0; i < topSeller?.length;i++){
+      if(i<2){
+        bestSells[i] = topSeller[i]
+      }
+   }
      if(topSeller.length > 2){
     const sum = (topSeller[0]?.value*1) + (topSeller[1]?.value*1)
     const otherValue = response.total*1 - sum
@@ -59,7 +61,6 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
       try{
         const response  = await apiClient.get(`localadmin/dashboard/pie?year=${currentYear}&coldRoomId=${user.coldRoom.id}`)
         if(response.status === 200){
-          console.log('piechart data=',response.data)
           rearrangeResponse(response.data)
       }
       }
@@ -68,7 +69,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     fetchCurrentYearOrders()
    
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[user])
 const filterByYearHandler = async(e)=>{
   setSelectedValue(e.target.value)
   try{
@@ -79,6 +80,7 @@ const filterByYearHandler = async(e)=>{
   }
   catch(err){}
 }
+ console.log('salesOverview=-',salesOverview)
     return (
       <div className='w-100 h-100 p-3'>
          <div className='d-flex justify-content-between'>

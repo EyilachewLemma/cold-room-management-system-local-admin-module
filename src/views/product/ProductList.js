@@ -26,7 +26,6 @@ const ProductList = () => {
   try{
    var response = await apiClient.get(`localadmin/products?search=${searchBy.current.value}&coldRoomId=${user.coldRoom.id}`)
    if(response.status === 200){
-    console.log('products=..',response.data)
     dispatch(productAction.setProducts(response.data))
    
    }
@@ -39,7 +38,7 @@ const ProductList = () => {
    useEffect(()=>{   
   featchProducts()
    // eslint-disable-next-line react-hooks/exhaustive-deps
-   },[])
+   },[user])
    const handelAddProduct = () =>{
     navigate('/products/add-product')
    }
@@ -49,9 +48,6 @@ const ProductList = () => {
   const ViewDetailHandler = (prId) =>{
     navigate(`/products/${prId}`)
   }
-  // const editProduct = (product) =>{
-    
-  // }
 
   const enterKeyHandler = (event) =>{
     if(event.key === 'Enter' || !event.target.value){
@@ -112,7 +108,7 @@ const ProductList = () => {
               <th>NO</th>
               <th>Product Name</th>
               <th>Product Image</th>
-              <th>Amount(KG)</th>
+              <th>Current Quantity(KG)</th>
               <th className="onPrintDnone"></th>
             </tr>
           </thead>

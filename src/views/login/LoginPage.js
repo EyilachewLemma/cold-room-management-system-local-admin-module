@@ -48,7 +48,7 @@ const LoginPage = () =>{
         } 
         const fetchUserData = async(data) =>{
           try{
-           const response = await axios.get('http://coldroomapinew.merahitechnologies.com/localadmin/auth/my-account',{
+           const response = await axios.get('https://coldroomapinew.rensysengineering.com/localadmin/auth/my-account',{
             headers: {
               'Access-Control-Allow-Origin': '*',
               Accept: 'application/json',

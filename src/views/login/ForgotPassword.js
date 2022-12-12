@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button'
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { userAction } from '../../store/slices/UserSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useSearchParams } from 'react-router-dom';
 import classes from './Login.module.css'
 import apiClient from '../../url';
 const ForgotPassword = () =>{
@@ -12,6 +12,8 @@ const ForgotPassword = () =>{
  const [errors,setErrors] = useState({password:'',confirmpassword:''})
  const dispatch = useDispatch()
  const navigate = useNavigate()
+ // eslint-disable-next-line no-unused-vars
+ const [query,setQuery] = useSearchParams()
      const changeHandler = (e) =>{
         const {name,value} = e.target
         setCridentials(prevValues=>{
@@ -55,7 +57,7 @@ const ForgotPassword = () =>{
         setErrors(error)
         if(Object.values(error).length === 0){
           try{
-            const response = await apiClient.post('admin/auth/reset-password',{newPassword:cridentials.password})
+            const response = await apiClient.post('admin/auth/reset-password',{newPassword:cridentials.password,email:query.get('email')})
             if(response.status === 200 || 201){
               fetchUserData()
             }

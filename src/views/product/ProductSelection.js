@@ -11,7 +11,7 @@ const ProductSelection = (props) =>{
   const user = useSelector(state=>state.user.data)
   const [products,setProducts] = useState([])
   const [types,setTypes] =useState([])
- const [productInfo,setProductInfo] =useState({productId:"",productTypeId:"",quality:"Fresh",quantity:"",warehousePosition:''})
+ const [productInfo,setProductInfo] =useState({productId:"",productTypeId:"",quality:"",quantity:"",warehousePosition:''})
  const [errors,setErrors] = useState({productId:"",productTypeId:"",quality:"",quantity:"",warehousePosition:'',farmer:''})
  const[modalData,setModalData] = useState({show:false,status:null,title:'',message:''})
  const dispatch = useDispatch()
@@ -93,6 +93,7 @@ const ProductSelection = (props) =>{
             kebele:farmerInfo.farmer.kebele
            }
          }
+         productData.addedBy=(user.fName+' '+user.lName)
           productData.isNew = true
           productData.farmer = farmer
           productData.product = productInfo  
@@ -100,22 +101,26 @@ const ProductSelection = (props) =>{
 
       }
       else if(!props.isNewFarmer){
+        productData.addedBy=(user.fName+' '+user.lName)
         productData.isNew = false
         productData.farmerId =props.farmerId
         productData.product = productInfo
-        productData.coldRoomId = 1
+        productData.coldRoomId = user.coldRoom.id
 
       }
       if(!error && !farmerInfo.error ){         
         try{
           dispatch(buttonAction.setBtnSpiner(true));
         response = await apiClient.post('localadmin/products',productData)
-        if(response.status === 200){
+        if(response.status === 200 || 201){
           setModalData({show:true,status:1,title:'Successful',message:'You added a product successfully'})
           setProductInfo(prevValue=>{
             return {...prevValue,quantity:'',warehousePosition:''}
           })
-          props.setFarmer({})
+          if(props?.isNewFarmer){
+            props.setFarmer({})
+          }
+          
         }
         }
         catch(err){
@@ -163,18 +168,15 @@ const ProductSelection = (props) =>{
     </Form.Select>
     <span className={classes.errorText}>{errors.type}</span>
     </Form.Group> 
-    <Form.Group className="mb-3 flex-fill" controlId="product">
-    <Form.Label>Select Product Quality</Form.Label>
-    <Form.Select 
+    <Form.Group className="mb-3 flex-fill" controlId="quality">
+    <Form.Label>Product Quality</Form.Label>
+    <Form.Control 
     name='quality'
+    placeholder='ex. Fresh'
     className={errors.quality?classes.errorBorder:''}
-    onChange={selectChangeHandler}
+    onChange={onChangeHandler}
     value={productInfo.quality || ''}
-    >
-    <option value='Fresh'>Fresh</option>
-    <option value='Nutritive'>nutritive </option>
-    <option value='Flavor'>flavor </option>
-  </Form.Select>
+    />
   <span className={classes.errorText}>{errors.quality}</span>
   </Form.Group> 
       

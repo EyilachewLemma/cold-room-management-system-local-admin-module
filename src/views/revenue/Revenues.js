@@ -34,7 +34,7 @@ const Revenue = () => {
   useEffect( ()=>{
       featchRevenues()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[currentPage])
+  },[currentPage,user])
 const searchByHandler = async () =>{
   dispatch(isLoadingAction.setIsLoading(true))
   try{
@@ -126,7 +126,7 @@ const searchByHandler = async () =>{
                 <th className="small">Added Date</th>
                 <th className="small">Sold Date</th>
                 <th className="small">Quantity(Kg)</th>
-                <th className="small">Amount(ETB)</th>
+                <th className="small">Rent Profit(ETB)</th>
               </tr>
             </thead>
             <tbody>

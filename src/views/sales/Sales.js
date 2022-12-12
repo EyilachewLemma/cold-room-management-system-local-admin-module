@@ -34,7 +34,7 @@ const Sales = () => {
     
   featchSaleses()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[currentPage])
+  },[currentPage,user])
  const searchByHandler = async() =>{
   dispatch(isLoadingAction.setIsLoading(true))
   try{

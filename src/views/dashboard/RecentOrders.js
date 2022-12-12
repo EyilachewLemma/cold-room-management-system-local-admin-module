@@ -25,7 +25,7 @@ const RecentOrders = () =>{
 useEffect(()=>{
   featchOrders()
 // eslint-disable-next-line react-hooks/exhaustive-deps
-},[])
+},[user])
   return (
     <div>
         <div className='d-flex justify-content-between text-white px-4 pb-4'>

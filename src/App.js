@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import apiClient from './url/index';
 import Router from './routes';
-import './App.css';
 import { userAction } from './store/slices/UserSlice';
+import './App.css';
 
 function App() {
   
@@ -13,7 +13,7 @@ function App() {
   const dispatch = useDispatch()
   const fetchUserData = async(token) =>{
     try{
-     const response = await axios.get('http://coldroomapinew.merahitechnologies.com/localadmin/auth/my-account',{
+     const response = await axios.get('https://coldroomapinew.rensysengineering.com/localadmin/auth/my-account',{
       headers: {
         'Access-Control-Allow-Origin': '*',
         Accept: 'application/json',
@@ -24,8 +24,6 @@ function App() {
      })
      if(response.status === 200){
       dispatch(userAction.setUser(response.data))
-      console.log('user data=',response.data)
-      navigate('/')
    }
     }
     catch(err){
@@ -35,10 +33,8 @@ function App() {
   useEffect(()=>{
     const token = localStorage.getItem('token')
     if(token){
-      dispatch(userAction.setIsAuthenticated(true))
       dispatch(userAction.setToken(token))
       apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      dispatch(userAction.setIsAuthenticated(true))
       fetchUserData(token)
     }
    
